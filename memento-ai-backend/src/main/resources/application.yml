@@ -1,0 +1,57 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:h2:file:${DB_PATH:./data/memento_db};MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    username: ${DB_USER:sa}
+    password: ${DB_PASS:}
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+  sql:
+    init:
+      schema-locations: classpath:db/schema.sql
+      mode: always
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.memento.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+# AI Configuration
+ai:
+  provider: deepseek
+  deepseek:
+    api-key: ${DEEPSEEK_API_KEY:}
+    model: deepseek-chat
+    api-url: https://api.deepseek.com/v1/chat/completions
+  embedding:
+    model: text-embedding-3-small
+    dimension: 1536
+
+# File Storage
+file:
+  upload-path: ${UPLOAD_PATH:./uploads/}
+  export-path: ${EXPORT_PATH:./exports/}
+
+# CORS Configuration
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}

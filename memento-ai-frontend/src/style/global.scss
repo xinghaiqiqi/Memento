@@ -1,0 +1,289 @@
+/* global.scss - 艺术化梦幻风格重构 */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@300;500;700&family=Inter:wght@300;400;600&display=swap');
+
+:root {
+  --galaxy-bg: #0b0e14;
+  --accent-primary: #7f5af0;
+  --accent-secondary: #2cb67d;
+  --accent-tertiary: #ef4565;
+  --glass-white: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glow-shadow: 0 0 20px rgba(127, 90, 240, 0.2);
+  --font-title: 'Cinzel', 'Noto Serif SC', serif;
+  --font-main: 'Inter', 'PingFang SC', sans-serif;
+  --sidebar-text-unselected: #ffffff;
+  
+  /* 鎏金质感变量 */
+  --gold-light: #fcf6ba;
+  --gold-mid: #bf953f;
+  --gold-dark: #aa771c;
+  --gold-gradient: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+  --gold-glow: 0 0 15px rgba(191, 149, 63, 0.4);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--galaxy-bg);
+  color: #fffffe;
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* 艺术化背景装饰：流动的极光 */
+.app-wrapper::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(127, 90, 240, 0.05) 0%, transparent 40%),
+              radial-gradient(circle at 20% 30%, rgba(44, 182, 125, 0.03) 0%, transparent 30%),
+              radial-gradient(circle at 80% 70%, rgba(239, 69, 101, 0.03) 0%, transparent 30%);
+  animation: aurora 20s ease-in-out infinite alternate;
+  z-index: -2;
+  pointer-events: none;
+}
+
+@keyframes aurora {
+  0% { transform: rotate(0deg) scale(1); }
+  100% { transform: rotate(10deg) scale(1.1); }
+}
+
+/* 高级毛玻璃容器 */
+.glass-container {
+  background: var(--glass-white);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border-radius: 24px;
+}
+
+/* 艺术化排版 */
+h1, h2, .museum-title {
+  font-family: var(--font-title);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.museum-title {
+  font-size: 42px;
+  background: linear-gradient(to bottom, #ffffff 60%, #94a1b2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
+  text-transform: none; /* 保持原样，不强制大写 */
+}
+
+/* Element Plus 组件艺术化重写 */
+
+/* 1. 弹窗 (Dialog) 艺术化 */
+.el-overlay {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(12px);
+  z-index: 2000 !important;
+}
+
+.el-dialog, .el-message-box {
+  background: #0f1218 !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(127, 90, 240, 0.1) !important;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+  }
+
+  .el-dialog__header, .el-message-box__header {
+    margin-right: 0;
+    padding: 25px 30px;
+    border-bottom: 1px solid var(--glass-border);
+    .el-dialog__title, .el-message-box__title {
+      color: #fff !important;
+      font-family: var(--font-title);
+      font-size: 22px;
+      letter-spacing: 2px;
+    }
+  }
+
+  .el-dialog__body, .el-message-box__content {
+    padding: 30px;
+    color: #fffffe !important;
+    font-size: 16px;
+  }
+
+  .el-dialog__footer, .el-message-box__btns {
+    padding: 20px 30px;
+    border-top: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.02);
+  }
+}
+
+/* 2. 抽屉 (Drawer) 艺术化 */
+.el-drawer {
+  background: #0f1218 !important;
+  backdrop-filter: blur(30px) !important;
+  border-left: 1px solid var(--glass-border) !important;
+  box-shadow: -15px 0 50px rgba(0, 0, 0, 0.8) !important;
+
+  .el-drawer__header {
+    margin-bottom: 0;
+    padding: 30px;
+    border-bottom: 1px solid var(--glass-border);
+    color: #fff !important;
+    span {
+      font-family: var(--font-title);
+      color: #fff !important;
+      font-size: 24px;
+      letter-spacing: 2px;
+    }
+  }
+  
+  .el-drawer__body {
+    padding: 30px;
+    color: #fffffe !important;
+  }
+}
+
+/* 强制覆盖所有 Element Plus 白色背景 */
+.el-popper, .el-select__popper, .el-dropdown__menu, .el-cascader__dropdown {
+  background: #1a1f2b !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+  .el-select-dropdown__item {
+    color: #94a1b2;
+    &.hover, &:hover { background: rgba(127, 90, 240, 0.2) !important; color: #fff; }
+    &.selected { color: var(--accent-primary); font-weight: bold; }
+  }
+}
+
+/* 3. 按钮艺术化 */
+.el-button {
+  border-radius: 12px !important;
+  font-weight: 500 !important;
+  letter-spacing: 1px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+
+  &--primary {
+    background: linear-gradient(135deg, #7f5af0 0%, #4d22c7 100%) !important;
+    border: none !important;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(127, 90, 240, 0.4);
+    }
+  }
+
+  &.is-link {
+    color: var(--accent-primary);
+    &:hover { color: #fff; }
+  }
+}
+
+/* 4. 侧边栏艺术化 */
+.aside-container {
+  border-right: 1px solid var(--glass-border) !important;
+  
+  /* 优化菜单项样式，平衡清晰度与美感 */
+  .el-menu-item {
+    transition: all 0.4s ease !important;
+    
+    .menu-text {
+      transition: all 0.3s ease !important;
+    }
+    
+    &:hover, &.is-active {
+      .menu-text {
+        color: #fff !important;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+      }
+    }
+  }
+}
+
+/* 鎏金文字通用类 */
+.text-gilded {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 5px rgba(191, 149, 63, 0.3));
+  font-weight: 700;
+}
+
+/* 5. 统一表格艺术化 */
+.el-table {
+  --el-table-bg-color: transparent !important;
+  --el-table-tr-bg-color: transparent !important;
+  --el-table-header-bg-color: rgba(255, 255, 255, 0.03) !important;
+  --el-table-border-color: rgba(255, 255, 255, 0.05) !important;
+  --el-table-text-color: #94a1b2 !important;
+  --el-table-header-text-color: #fff !important;
+  --el-table-row-hover-bg-color: rgba(127, 90, 240, 0.05) !important;
+
+  font-size: 14px !important;
+  
+  th.el-table__cell {
+    font-family: var(--font-title);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 12px;
+  }
+}
+
+/* 6. 表单元素对比度强化 */
+.el-checkbox, .el-radio {
+  --el-checkbox-text-color: #94a1b2 !important;
+  --el-radio-text-color: #94a1b2 !important;
+  
+  &.is-checked {
+    .el-checkbox__label, .el-radio__label {
+      color: #fff !important;
+      text-shadow: 0 0 10px rgba(127, 90, 240, 0.3);
+    }
+  }
+
+  .el-checkbox__inner, .el-radio__inner {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+}
+
+.el-input, .el-textarea {
+  --el-input-bg-color: rgba(255, 255, 255, 0.05) !important;
+  --el-input-border-color: rgba(255, 255, 255, 0.1) !important;
+  --el-input-text-color: #fff !important;
+  --el-input-placeholder-color: #555e6b !important;
+  
+  .el-input__wrapper, .el-textarea__inner {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+    &:hover { box-shadow: 0 0 0 1px var(--accent-primary) inset !important; }
+    &.is-focus { box-shadow: 0 0 0 1px var(--accent-primary) inset !important; }
+  }
+}
+
+/* 7. 步骤条对比度强化 */
+.el-step {
+  .el-step__title {
+    color: #94a1b2 !important;
+    &.is-process { color: #fff !important; font-weight: bold; }
+    &.is-success { color: var(--accent-secondary) !important; }
+  }
+  .el-step__icon {
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    &.is-text { color: #94a1b2; }
+  }
+  .el-step__head.is-process {
+    .el-step__icon { border-color: var(--accent-primary) !important; color: #fff; }
+  }
+}
