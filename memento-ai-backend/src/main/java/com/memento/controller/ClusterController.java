@@ -1,48 +1,57 @@
 package com.memento.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.memento.entity.Memory;
-import com.memento.entity.TopicCluster;
-import com.memento.mapper.TopicClusterMapper;
-import com.memento.service.MemoryService;
-import com.memento.util.AiUtils;
+import com.memento.dto.Result;
+import com.memento.dto.TopicClusterDTO;
+import com.memento.service.ClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/clusters")
 public class ClusterController {
 
     @Autowired
-    private TopicClusterMapper topicClusterMapper;
-
-    @Autowired
-    private MemoryService memoryService;
-
-    @Autowired
-    private AiUtils aiUtils;
+    private ClusterService clusterService;
 
     @GetMapping
-    public List<TopicCluster> list() {
-        return topicClusterMapper.selectList(
-                new LambdaQueryWrapper<TopicCluster>().eq(TopicCluster::getUserId, 1L)
-        );
+    public Result<List<TopicClusterDTO>> list() {
+        List<TopicClusterDTO> clusters = clusterService.getAllClusters(1L);
+        return Result.success(clusters);
+    }
+
+    @GetMapping("/{id}")
+    public Result<TopicClusterDTO> getById(@PathVariable Long id) {
+        TopicClusterDTO cluster = clusterService.getClusterById(id);
+        return cluster != null ? Result.success(cluster) : Result.error("主题不存在");
+    }
+
+    @GetMapping("/{id}/memories")
+    public Result<TopicClusterDTO> getClusterMemories(@PathVariable Long id) {
+        TopicClusterDTO cluster = clusterService.getClusterMemories(id);
+        return cluster != null ? Result.success(cluster) : Result.error("主题不存在");
     }
 
     @PostMapping("/run")
-    public String run() {
-        List<Memory> memories = memoryService.list(
-                new LambdaQueryWrapper<Memory>().eq(Memory::getUserId, 1L).orderByDesc(Memory::getEventDate).last("limit 20")
-        );
-        
-        if (memories.isEmpty()) {
-            return "{\"error\": \"没有足够的记忆进行聚类\"}";
+    public Result<TopicClusterDTO> runClustering() {
+        try {
+            TopicClusterDTO cluster = clusterService.runClustering(1L);
+            return Result.success("聚类完成", cluster);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
         }
-        
-        String text = memories.stream().map(m -> m.getTitle() + ": " + m.getContent()).collect(Collectors.joining("\n"));
-        return aiUtils.generateClusters(text);
+    }
+
+    @PutMapping("/{id}/rename")
+    public Result<Boolean> rename(@PathVariable Long id, @RequestParam String name) {
+        boolean success = clusterService.renameCluster(id, name);
+        return success ? Result.success("重命名成功", true) : Result.error("重命名失败");
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<Boolean> delete(@PathVariable Long id) {
+        boolean success = clusterService.deleteCluster(id);
+        return success ? Result.success("删除成功", true) : Result.error("删除失败");
     }
 }

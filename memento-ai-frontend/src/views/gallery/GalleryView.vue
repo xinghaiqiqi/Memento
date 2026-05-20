@@ -2,8 +2,8 @@
   <div class="gallery-container">
     <div class="gallery-header">
       <div class="title-section">
-        <h2>时光画廊</h2>
-        <p>每一张卡片都是一段珍藏的记忆</p>
+        <h2 class="gallery-title">时光画廊</h2>
+        <p class="gallery-subtitle">每一张卡片都是一段珍藏的记忆</p>
       </div>
       <div class="filter-actions">
         <el-radio-group v-model="sentimentFilter" @change="handleFilterChange">
@@ -25,30 +25,27 @@
         class="memory-card-wrapper"
         @click="handleView(memory)"
       >
-        <el-card 
-          :body-style="{ padding: '0px' }" 
-          shadow="hover" 
+        <div 
           class="memory-card"
-          :class="getSentimentClass(memory.sentimentScore)"
+          :style="{ borderLeftColor: memory.sentimentColor }"
         >
           <div class="card-content">
             <div class="card-header">
               <span class="date">{{ memory.eventDate }}</span>
-              <el-icon class="sentiment-icon">
-                <component :is="getSentimentIcon(memory.sentimentScore)" />
-              </el-icon>
+              <div class="sentiment-indicator" :style="{ backgroundColor: memory.sentimentColor }"></div>
             </div>
             <h3 class="title">{{ memory.title }}</h3>
-            <p class="summary">{{ memory.content }}</p>
+            <p class="summary">{{ memory.summary }}</p>
             <div class="card-footer">
+              <div v-if="memory.topicName" class="topic-badge">{{ memory.topicName }}</div>
               <div class="tags">
-                <el-tag v-for="tag in formatTags(memory.tags)" :key="tag" size="small" effect="plain">
-                  {{ tag }}
-                </el-tag>
+                <span v-for="tag in formatTags(memory.tags)" :key="tag" class="tag">
+                  #{{ tag }}
+                </span>
               </div>
             </div>
           </div>
-        </el-card>
+        </div>
       </div>
     </div>
 
@@ -56,12 +53,13 @@
       v-model="drawerVisible"
       :title="selectedMemory?.title"
       size="45%"
+      class="memory-drawer"
     >
       <div v-if="selectedMemory" class="memory-detail">
         <div class="detail-meta">
           <el-tag type="info">{{ selectedMemory.eventDate }}</el-tag>
-          <el-tag :type="getSentimentType(selectedMemory.sentimentScore)">
-            情感: {{ getSentimentLabel(selectedMemory.sentimentScore) }}
+          <el-tag :style="{ backgroundColor: selectedMemory.sentimentColor }">
+            {{ getSentimentLabel(selectedMemory.sentimentScore) }}
           </el-tag>
         </div>
         <div class="detail-content">
@@ -73,25 +71,43 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 
 const loading = ref(false)
 const sentimentFilter = ref('all')
 const drawerVisible = ref(false)
 const selectedMemory = ref(null)
-
 const memories = ref([
-  { id: 1, title: '西湖边的落日', content: '今天和朋友一起去了西湖，落日真的很美。那一抹橘红染红了整个湖面，微风拂过，泛起阵阵涟漪。', eventDate: '2024-05-12', tags: '旅行,落日', sentimentScore: 0.8 },
-  { id: 2, title: '完成项目', content: '终于把这个艰巨的任务完成了。这个过程虽然辛苦，但看到成果的那一刻，所有的付出都值得了。', eventDate: '2024-05-10', tags: '工作,成就感', sentimentScore: 0.5 },
-  { id: 3, title: '面试失败', content: '今天面试没过，有点难受。感觉自己准备得还不够充分，下次要更加努力才行。', eventDate: '2024-05-08', tags: '生活,挫折', sentimentScore: -0.6 },
-  { id: 4, title: '晨跑记录', content: '清晨的空气真清新，跑完5公里感觉整个人都清爽了。', eventDate: '2024-05-07', tags: '运动,健康', sentimentScore: 0.4 },
-  { id: 5, title: '深夜食堂', content: '路边的一碗热汤面，治愈了深夜的疲惫。', eventDate: '2024-05-06', tags: '美食,生活', sentimentScore: 0.3 },
-  { id: 6, title: '错过的公交', content: '眼睁睁看着公交车开走，今天又是迟到的一天。', eventDate: '2024-05-04', tags: '倒霉', sentimentScore: -0.4 },
+  { id: 1, title: '西湖边的落日', summary: '今天和朋友一起去了西湖，落日真的很美。那一抹橘红染红了整个湖面，微风拂过...', content: '今天和朋友一起去了西湖，落日真的很美。那一抹橘红染红了整个湖面，微风拂过，泛起阵阵涟漪。远处的雷峰塔在夕阳的映照下显得格外壮丽，湖边的柳树轻轻摇曳，仿佛在诉说着古老的故事。', eventDate: '2024-05-12', tags: '旅行,落日', sentimentScore: 0.8, sentimentColor: '#ef4444', topicName: '旅行足迹' },
+  { id: 2, title: '完成项目', summary: '终于把这个艰巨的任务完成了。这个过程虽然辛苦，但看到成果的那一刻...', content: '终于把这个艰巨的任务完成了。这个过程虽然辛苦，但看到成果的那一刻，所有的付出都值得了。团队协作非常顺利，每个人都发挥了自己的专长，最终交付了一个让客户满意的产品。', eventDate: '2024-05-10', tags: '工作,成就感', sentimentScore: 0.5, sentimentColor: '#f97316', topicName: '职场成长' },
+  { id: 3, title: '面试失败', summary: '今天面试没过，有点难受。感觉自己准备得还不够充分...', content: '今天面试没过，有点难受。感觉自己准备得还不够充分，下次要更加努力才行。这次经历让我意识到自己还有很多需要学习的地方，我会认真总结经验教训。', eventDate: '2024-05-08', tags: '生活,挫折', sentimentScore: -0.6, sentimentColor: '#3b82f6' },
+  { id: 4, title: '晨跑记录', summary: '清晨的空气真清新，跑完5公里感觉整个人都清爽了...', content: '清晨的空气真清新，跑完5公里感觉整个人都清爽了。阳光透过树叶洒在跑道上，形成斑驳的光影，鸟儿在枝头欢快地歌唱，这是一天中最美好的时刻。', eventDate: '2024-05-07', tags: '运动,健康', sentimentScore: 0.4, sentimentColor: '#84cc16', topicName: '生活感悟' },
+  { id: 5, title: '深夜食堂', summary: '路边的一碗热汤面，治愈了深夜的疲惫...', content: '路边的一碗热汤面，治愈了深夜的疲惫。老板是一位和蔼的阿姨，她总是记得我的口味，多加一勺辣椒油。在这个寒冷的夜晚，一碗热腾腾的面温暖了我的胃，也温暖了我的心。', eventDate: '2024-05-06', tags: '美食,生活', sentimentScore: 0.3, sentimentColor: '#eab308' },
+  { id: 6, title: '错过的公交', summary: '眼睁睁看着公交车开走，今天又是迟到的一天...', content: '眼睁睁看着公交车开走，今天又是迟到的一天。昨晚熬夜工作导致早上起晚了，下次一定要注意时间管理，不能再这样了。迟到不仅影响自己，也影响团队的工作节奏。', eventDate: '2024-05-04', tags: '倒霉', sentimentScore: -0.4, sentimentColor: '#60a5fa' },
 ])
+
+const fetchMemories = async () => {
+  loading.value = true
+  try {
+    const res = await axios.get('/api/gallery?size=50')
+    if (res.data && res.data.code === 200 && res.data.data) {
+      const newData = res.data.data.records || res.data.data || []
+      if (newData.length > 0) {
+        memories.value = newData
+      }
+    }
+  } catch (error) {
+    console.error('Fetch gallery failed:', error)
+  } finally {
+    loading.value = false
+  }
+}
 
 const filteredMemories = computed(() => {
   if (sentimentFilter.value === 'all') return memories.value
   return memories.value.filter(item => {
+    if (!item.sentimentScore) return true
     if (sentimentFilter.value === 'positive') return item.sentimentScore > 0.3
     if (sentimentFilter.value === 'negative') return item.sentimentScore < -0.3
     return item.sentimentScore >= -0.3 && item.sentimentScore <= 0.3
@@ -100,25 +116,8 @@ const filteredMemories = computed(() => {
 
 const formatTags = (tags) => tags ? tags.split(',') : []
 
-const getSentimentClass = (score) => {
-  if (score > 0.3) return 'positive-card'
-  if (score < -0.3) return 'negative-card'
-  return 'neutral-card'
-}
-
-const getSentimentIcon = (score) => {
-  if (score > 0.3) return 'Sunny'
-  if (score < -0.3) return 'Cloudy'
-  return 'PartlyCloudy'
-}
-
-const getSentimentType = (score) => {
-  if (score > 0.3) return 'success'
-  if (score < -0.3) return 'danger'
-  return 'info'
-}
-
 const getSentimentLabel = (score) => {
+  if (!score) return '未知'
   if (score > 0.3) return '积极'
   if (score < -0.3) return '消极'
   return '中性'
@@ -135,99 +134,157 @@ const handleView = (memory) => {
   selectedMemory.value = memory
   drawerVisible.value = true
 }
+
+onMounted(() => {
+  fetchMemories()
+})
 </script>
 
 <style lang="scss" scoped>
 .gallery-container {
-  padding: 24px;
+  padding: 40px;
   min-height: calc(100vh - 60px);
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+}
 
-  .gallery-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    margin-bottom: 32px;
-    
-    .title-section {
-      h2 { margin: 0 0 8px 0; color: #fff; font-size: 26px; text-shadow: 0 0 10px rgba(127, 90, 240, 0.5); }
-      p { margin: 0; color: #94a1b2; }
+.gallery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+  
+  .title-section {
+    .gallery-title { 
+      margin: 0 0 8px 0; 
+      color: #fff; 
+      font-size: 32px; 
+      font-weight: 700;
+      text-shadow: 0 0 30px rgba(127, 90, 240, 0.5);
+      letter-spacing: 2px;
     }
+    .gallery-subtitle { margin: 0; color: #94a1b2; font-size: 15px; }
+  }
+}
+
+.waterfall-layout {
+  column-count: 3;
+  column-gap: 28px;
+  
+  @media (max-width: 1200px) { column-count: 2; }
+  @media (max-width: 768px) { column-count: 1; }
+
+  .memory-card-wrapper {
+    break-inside: avoid;
+    margin-bottom: 28px;
+    cursor: pointer;
   }
 
-  .waterfall-layout {
-    column-count: 3;
-    column-gap: 24px;
+  .memory-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border-left: 4px solid;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     
-    @media (max-width: 1200px) { column-count: 2; }
-    @media (max-width: 768px) { column-count: 1; }
-
-    .memory-card-wrapper {
-      break-inside: avoid;
-      margin-bottom: 24px;
-      cursor: pointer;
+    &:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 15px 40px rgba(127, 90, 240, 0.2);
     }
 
-    .memory-card {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      
-      &:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 10px 30px rgba(127, 90, 240, 0.3);
-        border-color: rgba(127, 90, 240, 0.5);
-      }
-
-      .card-content {
-        padding: 24px;
-      }
-
-      .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        .date { font-size: 13px; color: #94a1b2; }
-        .sentiment-icon { font-size: 20px; }
-      }
-
-      .title {
-        margin: 0 0 12px 0;
-        font-size: 19px;
-        color: #fff;
-        line-height: 1.4;
-      }
-
-      .summary {
-        margin: 0 0 20px 0;
-        font-size: 15px;
-        color: #94a1b2;
-        line-height: 1.6;
-        display: -webkit-box;
-        -webkit-line-clamp: 4;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-
-      &.positive-card { border-top: 4px solid #2cb67d; .sentiment-icon { color: #2cb67d; } }
-      &.negative-card { border-top: 4px solid #ef4565; .sentiment-icon { color: #ef4565; } }
-      &.neutral-card { border-top: 4px solid #72757e; .sentiment-icon { color: #72757e; } }
+    .card-content {
+      padding: 28px;
     }
-  }
 
-  .memory-detail {
-    padding: 0 20px;
-    color: #fff;
-    .detail-meta {
+    .card-header {
       display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      
+      .date { 
+        font-size: 13px; 
+        color: #7f5af0; 
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+      
+      .sentiment-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        box-shadow: 0 0 10px currentColor;
+      }
     }
-    .detail-content {
-      font-size: 17px;
-      line-height: 1.8;
-      color: #fffffe;
-      white-space: pre-wrap;
+
+    .title {
+      margin: 0 0 14px 0;
+      font-size: 20px;
+      color: #fff;
+      font-weight: 600;
+      line-height: 1.4;
     }
+
+    .summary {
+      margin: 0 0 20px 0;
+      font-size: 15px;
+      color: #94a1b2;
+      line-height: 1.7;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      
+      .topic-badge {
+        background: linear-gradient(135deg, #7f5af0, #9d4edd);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+      
+      .tags {
+        display: flex;
+        gap: 8px;
+        
+        .tag {
+          color: #94a1b2;
+          font-size: 12px;
+          opacity: 0.7;
+        }
+      }
+    }
+  }
+}
+
+.memory-detail {
+  padding: 0 20px;
+  color: #fff;
+  
+  .detail-meta {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  
+  .detail-content {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #fffffe;
+    white-space: pre-wrap;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 12px;
   }
 }
 
@@ -235,9 +292,22 @@ const handleView = (memory) => {
   background: rgba(255, 255, 255, 0.05);
   color: #94a1b2;
   border-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px !important;
+  padding: 8px 20px;
 }
+
 :deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
-  background-color: #7f5af0;
+  background: linear-gradient(135deg, #7f5af0, #9d4edd);
   border-color: #7f5af0;
+  color: #fff;
+}
+
+:deep(.memory-drawer .el-drawer__header) {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:deep(.memory-drawer .el-drawer__body) {
+  background: #0f0f23;
 }
 </style>
