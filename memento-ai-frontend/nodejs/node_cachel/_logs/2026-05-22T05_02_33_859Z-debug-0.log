@@ -12,3 +12,14 @@
 11 silly logfile start cleaning logs, removing 1 files
 12 silly logfile done cleaning log files
 13 http fetch GET 200 https://registry.npmjs.org/npm 527ms
+14 verbose cwd D:\github\Memento\memento-ai-frontend
+15 verbose os Windows_NT 10.0.26200
+16 verbose node v24.14.1
+17 verbose npm  v11.11.0
+18 notice
+18 notice New [33mminor[39m version of npm available! [33m11.11.0[39m -> [34m11.15.0[39m
+18 notice Changelog: [34mhttps://github.com/npm/cli/releases/tag/v11.15.0[39m
+18 notice To update run: [4mnpm install -g npm@11.15.0[24m
+18 notice  { force: true, Symbol(proc-log.meta): true }
+19 verbose exit 1
+20 verbose code 1

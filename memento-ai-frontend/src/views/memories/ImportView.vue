@@ -1,7 +1,7 @@
 <template>
   <div class="import-container museum-fade-in">
     <div class="museum-header">
-      <h1 class="museum-title">Memory Laboratory</h1>
+      <h1 class="museum-title">记忆实验室</h1>
       <p class="museum-subtitle">萃取时间残片，凝练永恒记忆</p>
     </div>
 
@@ -88,6 +88,24 @@
                   </div>
                   <h3 class="card-title">{{ item.title }}</h3>
                   <p class="card-text">{{ item.content }}</p>
+                  
+                  <div class="card-photo-upload">
+                    <el-upload
+                      class="mini-uploader"
+                      action="/api/file/upload"
+                      :show-file-list="false"
+                      :on-success="(res) => item.photoUrl = res.data"
+                    >
+                      <div v-if="item.photoUrl" class="mini-photo-preview" :style="{ backgroundImage: `url(${item.photoUrl})` }">
+                        <div class="change-hint">点击更换</div>
+                      </div>
+                      <div v-else class="mini-upload-placeholder">
+                        <el-icon><Picture /></el-icon>
+                        <span>添加瞬间影像</span>
+                      </div>
+                    </el-upload>
+                  </div>
+
                   <div class="card-footer">
                     <div class="sentiment-indicator" :style="{ color: getSentimentColor(item.sentimentScore || 0) }">
                       <div class="indicator-dot"></div>
@@ -120,6 +138,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { Compass, Plus, Picture, ArrowLeft, Finished } from '@element-plus/icons-vue'
 import axios from 'axios'
 
 const router = useRouter()
@@ -368,9 +387,53 @@ const getSentimentLabel = (score) => {
     line-height: 1.6;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     margin-bottom: 20px;
+  }
+
+  .card-photo-upload {
+    margin-bottom: 20px;
+    .mini-uploader {
+      :deep(.el-upload) {
+        width: 100%;
+        height: 120px;
+        border: 1px dashed rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        transition: all 0.3s;
+        &:hover { border-color: var(--accent-mystic); background: rgba(157, 80, 187, 0.05); }
+      }
+    }
+    .mini-photo-preview {
+      width: 100%; height: 120px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .change-hint {
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      &:hover .change-hint { opacity: 1; }
+    }
+    .mini-upload-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #718096;
+      font-size: 12px;
+      .el-icon { font-size: 24px; }
+    }
   }
 
   .card-footer {
@@ -480,6 +543,7 @@ const getSentimentLabel = (score) => {
     border: 1px solid transparent;
     background: linear-gradient(135deg, var(--accent-mystic), transparent, var(--accent-quaternary)) border-box;
     -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
     opacity: 0.2;
     pointer-events: none;

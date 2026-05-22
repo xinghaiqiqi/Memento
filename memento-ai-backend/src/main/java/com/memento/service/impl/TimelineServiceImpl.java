@@ -7,7 +7,6 @@ import com.memento.entity.Memory;
 import com.memento.entity.Milestone;
 import com.memento.mapper.MemoryMapper;
 import com.memento.mapper.MilestoneMapper;
-import com.memento.service.MemoryService;
 import com.memento.service.TimelineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +24,6 @@ public class TimelineServiceImpl implements TimelineService {
 
     @Autowired
     private MilestoneMapper milestoneMapper;
-
-    @Autowired
-    private MemoryService memoryService;
 
     @Override
     public List<TimelineNodeDTO> getTimeline(Long userId, LocalDate startDate, LocalDate endDate, String viewMode) {

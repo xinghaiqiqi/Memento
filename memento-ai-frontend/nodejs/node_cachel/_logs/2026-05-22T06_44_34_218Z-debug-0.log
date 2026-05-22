@@ -1,0 +1,450 @@
+0 verbose cli D:\nodejs\node.exe D:\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.11.0
+2 info using node@v24.14.1
+3 silly config load:file:D:\nodejs\node_modules\npm\npmrc
+4 silly config load:file:D:\github\Memento\memento-ai-frontend\.npmrc
+5 silly config load:file:C:\Users\DELL\.npmrc
+6 silly config load:file:D:\github\Memento\memento-ai-frontend\nodejs\node_global\etc\npmrc
+7 verbose title npm install jspdf html2canvas
+8 verbose argv "install" "jspdf" "html2canvas"
+9 verbose logfile logs-max:10 dir:D:\github\Memento\memento-ai-frontend\nodejs\node_cachel\_logs\2026-05-22T06_44_34_218Z-
+10 verbose logfile D:\github\Memento\memento-ai-frontend\nodejs\node_cachel\_logs\2026-05-22T06_44_34_218Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 silly fetch manifest jspdf@*
+15 silly packumentCache full:https://registry.npmjs.org/jspdf cache-miss
+16 silly logfile done cleaning log files
+17 http fetch GET 200 https://registry.npmjs.org/jspdf 375ms (cache miss)
+18 silly packumentCache full:https://registry.npmjs.org/jspdf set size:undefined disposed:false
+19 silly fetch manifest html2canvas@*
+20 silly packumentCache full:https://registry.npmjs.org/html2canvas cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/html2canvas 116ms (cache miss)
+22 silly packumentCache full:https://registry.npmjs.org/html2canvas set size:undefined disposed:false
+23 silly placeDep ROOT html2canvas@1.4.1 OK for: memento-ai-frontend@0.0.0 want: *
+24 silly placeDep ROOT jspdf@4.2.1 OK for: memento-ai-frontend@0.0.0 want: *
+25 silly fetch manifest css-line-break@^2.1.0
+26 silly packumentCache full:https://registry.npmjs.org/css-line-break cache-miss
+27 silly fetch manifest text-segmentation@^1.0.3
+28 silly packumentCache full:https://registry.npmjs.org/text-segmentation cache-miss
+29 silly fetch manifest @babel/runtime@^7.28.6
+30 silly packumentCache full:https://registry.npmjs.org/@babel%2fruntime cache-miss
+31 silly fetch manifest fflate@^0.8.1
+32 silly packumentCache full:https://registry.npmjs.org/fflate cache-miss
+33 silly fetch manifest fast-png@^6.2.0
+34 silly packumentCache full:https://registry.npmjs.org/fast-png cache-miss
+35 silly fetch manifest canvg@^3.0.11
+36 silly packumentCache full:https://registry.npmjs.org/canvg cache-miss
+37 silly fetch manifest core-js@^3.6.0
+38 silly packumentCache full:https://registry.npmjs.org/core-js cache-miss
+39 silly fetch manifest dompurify@^3.3.1
+40 silly packumentCache full:https://registry.npmjs.org/dompurify cache-miss
+41 http fetch GET 200 https://registry.npmjs.org/css-line-break 110ms (cache miss)
+42 silly packumentCache full:https://registry.npmjs.org/css-line-break set size:undefined disposed:false
+43 http fetch GET 200 https://registry.npmjs.org/text-segmentation 303ms (cache miss)
+44 silly packumentCache full:https://registry.npmjs.org/text-segmentation set size:undefined disposed:false
+45 http fetch GET 200 https://registry.npmjs.org/fast-png 320ms (cache miss)
+46 silly packumentCache full:https://registry.npmjs.org/fast-png set size:undefined disposed:false
+47 http fetch GET 200 https://registry.npmjs.org/canvg 330ms (cache miss)
+48 silly packumentCache full:https://registry.npmjs.org/canvg set size:undefined disposed:false
+49 http fetch GET 200 https://registry.npmjs.org/fflate 348ms (cache miss)
+50 silly packumentCache full:https://registry.npmjs.org/fflate set size:undefined disposed:false
+51 http fetch GET 200 https://registry.npmjs.org/dompurify 427ms (cache miss)
+52 silly packumentCache full:https://registry.npmjs.org/dompurify set size:undefined disposed:false
+53 http fetch GET 200 https://registry.npmjs.org/core-js 439ms (cache miss)
+54 silly packumentCache full:https://registry.npmjs.org/core-js set size:undefined disposed:false
+55 http fetch GET 200 https://registry.npmjs.org/@babel%2fruntime 554ms (cache miss)
+56 silly packumentCache full:https://registry.npmjs.org/@babel%2fruntime set size:undefined disposed:false
+57 silly placeDep ROOT css-line-break@2.1.0 OK for: html2canvas@1.4.1 want: ^2.1.0
+58 silly placeDep ROOT text-segmentation@1.0.3 OK for: html2canvas@1.4.1 want: ^1.0.3
+59 silly fetch manifest utrie@^1.0.2
+60 silly packumentCache full:https://registry.npmjs.org/utrie cache-miss
+61 silly fetch manifest utrie@^1.0.2
+62 silly packumentCache full:https://registry.npmjs.org/utrie cache-miss
+63 http fetch GET 200 https://registry.npmjs.org/utrie 180ms (cache miss)
+64 silly packumentCache full:https://registry.npmjs.org/utrie set size:undefined disposed:false
+65 http fetch GET 200 https://registry.npmjs.org/utrie 252ms (cache miss)
+66 silly packumentCache full:https://registry.npmjs.org/utrie set size:undefined disposed:false
+67 silly placeDep ROOT utrie@1.0.2 OK for: css-line-break@2.1.0 want: ^1.0.2
+68 silly fetch manifest base64-arraybuffer@^1.0.2
+69 silly packumentCache full:https://registry.npmjs.org/base64-arraybuffer cache-miss
+70 http fetch GET 200 https://registry.npmjs.org/base64-arraybuffer 197ms (cache miss)
+71 silly packumentCache full:https://registry.npmjs.org/base64-arraybuffer set size:undefined disposed:false
+72 silly placeDep ROOT @babel/runtime@7.29.2 OK for: jspdf@4.2.1 want: ^7.28.6
+73 silly placeDep ROOT canvg@3.0.11 OK for: jspdf@4.2.1 want: ^3.0.11
+74 silly placeDep ROOT core-js@3.49.0 OK for: jspdf@4.2.1 want: ^3.6.0
+75 silly placeDep ROOT dompurify@3.4.5 OK for: jspdf@4.2.1 want: ^3.3.1
+76 silly placeDep ROOT fast-png@6.4.0 OK for: jspdf@4.2.1 want: ^6.2.0
+77 silly placeDep ROOT fflate@0.8.3 OK for: jspdf@4.2.1 want: ^0.8.1
+78 silly fetch manifest raf@^3.4.1
+79 silly packumentCache full:https://registry.npmjs.org/raf cache-miss
+80 silly fetch manifest core-js@^3.8.3
+81 silly packumentCache full:https://registry.npmjs.org/core-js cache-miss
+82 silly fetch manifest rgbcolor@^1.0.1
+83 silly packumentCache full:https://registry.npmjs.org/rgbcolor cache-miss
+84 silly fetch manifest @types/raf@^3.4.0
+85 silly packumentCache full:https://registry.npmjs.org/@types%2fraf cache-miss
+86 silly fetch manifest svg-pathdata@^6.0.3
+87 silly packumentCache full:https://registry.npmjs.org/svg-pathdata cache-miss
+88 silly fetch manifest stackblur-canvas@^2.0.0
+89 silly packumentCache full:https://registry.npmjs.org/stackblur-canvas cache-miss
+90 silly fetch manifest regenerator-runtime@^0.13.7
+91 silly packumentCache full:https://registry.npmjs.org/regenerator-runtime cache-miss
+92 silly fetch manifest @types/trusted-types@^2.0.7
+93 silly packumentCache full:https://registry.npmjs.org/@types%2ftrusted-types cache-miss
+94 silly fetch manifest pako@^2.1.0
+95 silly packumentCache full:https://registry.npmjs.org/pako cache-miss
+96 silly fetch manifest iobuffer@^5.3.2
+97 silly packumentCache full:https://registry.npmjs.org/iobuffer cache-miss
+98 silly fetch manifest @types/pako@^2.0.3
+99 silly packumentCache full:https://registry.npmjs.org/@types%2fpako cache-miss
+100 http cache https://registry.npmjs.org/core-js 14ms (cache hit)
+101 silly packumentCache full:https://registry.npmjs.org/core-js set size:814557 disposed:false
+102 http fetch GET 200 https://registry.npmjs.org/stackblur-canvas 118ms (cache miss)
+103 silly packumentCache full:https://registry.npmjs.org/stackblur-canvas set size:undefined disposed:false
+104 http fetch GET 200 https://registry.npmjs.org/regenerator-runtime 119ms (cache miss)
+105 silly packumentCache full:https://registry.npmjs.org/regenerator-runtime set size:undefined disposed:false
+106 http fetch GET 200 https://registry.npmjs.org/raf 128ms (cache miss)
+107 silly packumentCache full:https://registry.npmjs.org/raf set size:undefined disposed:false
+108 http fetch GET 200 https://registry.npmjs.org/svg-pathdata 132ms (cache miss)
+109 silly packumentCache full:https://registry.npmjs.org/svg-pathdata set size:undefined disposed:false
+110 http fetch GET 200 https://registry.npmjs.org/rgbcolor 163ms (cache miss)
+111 silly packumentCache full:https://registry.npmjs.org/rgbcolor set size:undefined disposed:false
+112 http fetch GET 200 https://registry.npmjs.org/@types%2ftrusted-types 163ms (cache miss)
+113 silly packumentCache full:https://registry.npmjs.org/@types%2ftrusted-types set size:undefined disposed:false
+114 http fetch GET 200 https://registry.npmjs.org/@types%2fpako 263ms (cache miss)
+115 silly packumentCache full:https://registry.npmjs.org/@types%2fpako set size:undefined disposed:false
+116 http fetch GET 200 https://registry.npmjs.org/@types%2fraf 279ms (cache miss)
+117 silly packumentCache full:https://registry.npmjs.org/@types%2fraf set size:undefined disposed:false
+118 http fetch GET 200 https://registry.npmjs.org/iobuffer 314ms (cache miss)
+119 silly packumentCache full:https://registry.npmjs.org/iobuffer set size:undefined disposed:false
+120 http fetch GET 200 https://registry.npmjs.org/pako 323ms (cache miss)
+121 silly packumentCache full:https://registry.npmjs.org/pako set size:undefined disposed:false
+122 silly placeDep ROOT @types/raf@3.4.3 OK for: canvg@3.0.11 want: ^3.4.0
+123 silly placeDep ROOT raf@3.4.1 OK for: canvg@3.0.11 want: ^3.4.1
+124 silly placeDep ROOT regenerator-runtime@0.13.11 OK for: canvg@3.0.11 want: ^0.13.7
+125 silly placeDep ROOT rgbcolor@1.0.1 OK for: canvg@3.0.11 want: ^1.0.1
+126 silly placeDep ROOT stackblur-canvas@2.7.0 OK for: canvg@3.0.11 want: ^2.0.0
+127 silly placeDep ROOT svg-pathdata@6.0.3 OK for: canvg@3.0.11 want: ^6.0.3
+128 silly fetch manifest performance-now@^2.1.0
+129 silly packumentCache full:https://registry.npmjs.org/performance-now cache-miss
+130 http fetch GET 200 https://registry.npmjs.org/performance-now 108ms (cache miss)
+131 silly packumentCache full:https://registry.npmjs.org/performance-now set size:undefined disposed:false
+132 silly placeDep ROOT @types/trusted-types@2.0.7 OK for: dompurify@3.4.5 want: ^2.0.7
+133 silly placeDep ROOT @types/pako@2.0.4 OK for: fast-png@6.4.0 want: ^2.0.3
+134 silly placeDep ROOT iobuffer@5.4.0 OK for: fast-png@6.4.0 want: ^5.3.2
+135 silly placeDep ROOT pako@2.1.0 OK for: fast-png@6.4.0 want: ^2.1.0
+136 silly placeDep ROOT performance-now@2.1.0 OK for: raf@3.4.1 want: ^2.1.0
+137 silly placeDep ROOT base64-arraybuffer@1.0.2 OK for: utrie@1.0.2 want: ^1.0.2
+138 silly reify moves {}
+139 silly audit bulk request {
+139 silly audit   '@babel/helper-string-parser': [ '7.27.1' ],
+139 silly audit   '@babel/helper-validator-identifier': [ '7.28.5' ],
+139 silly audit   '@babel/parser': [ '7.29.3' ],
+139 silly audit   '@babel/types': [ '7.29.0' ],
+139 silly audit   '@ctrl/tinycolor': [ '4.2.0' ],
+139 silly audit   '@element-plus/icons-vue': [ '2.3.2' ],
+139 silly audit   '@esbuild/android-arm': [ '0.18.20' ],
+139 silly audit   '@esbuild/android-arm64': [ '0.18.20' ],
+139 silly audit   '@esbuild/android-x64': [ '0.18.20' ],
+139 silly audit   '@esbuild/darwin-arm64': [ '0.18.20' ],
+139 silly audit   '@esbuild/darwin-x64': [ '0.18.20' ],
+139 silly audit   '@esbuild/freebsd-arm64': [ '0.18.20' ],
+139 silly audit   '@esbuild/freebsd-x64': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-arm': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-arm64': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-ia32': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-loong64': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-mips64el': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-ppc64': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-riscv64': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-s390x': [ '0.18.20' ],
+139 silly audit   '@esbuild/linux-x64': [ '0.18.20' ],
+139 silly audit   '@esbuild/netbsd-x64': [ '0.18.20' ],
+139 silly audit   '@esbuild/openbsd-x64': [ '0.18.20' ],
+139 silly audit   '@esbuild/sunos-x64': [ '0.18.20' ],
+139 silly audit   '@esbuild/win32-arm64': [ '0.18.20' ],
+139 silly audit   '@esbuild/win32-ia32': [ '0.18.20' ],
+139 silly audit   '@esbuild/win32-x64': [ '0.18.20' ],
+139 silly audit   '@floating-ui/core': [ '1.7.5' ],
+139 silly audit   '@floating-ui/dom': [ '1.7.6' ],
+139 silly audit   '@floating-ui/utils': [ '0.2.11' ],
+139 silly audit   '@jridgewell/sourcemap-codec': [ '1.5.5' ],
+139 silly audit   '@parcel/watcher': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-android-arm64': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-darwin-arm64': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-darwin-x64': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-freebsd-x64': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-linux-arm-glibc': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-linux-arm-musl': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-linux-arm64-glibc': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-linux-arm64-musl': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-linux-x64-glibc': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-linux-x64-musl': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-win32-arm64': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-win32-ia32': [ '2.5.6' ],
+139 silly audit   '@parcel/watcher-win32-x64': [ '2.5.6' ],
+139 silly audit   '@sxzz/popperjs-es': [ '2.11.8' ],
+139 silly audit   '@types/lodash': [ '4.17.24' ],
+139 silly audit   '@types/lodash-es': [ '4.17.12' ],
+139 silly audit   '@types/web-bluetooth': [ '0.0.21' ],
+139 silly audit   '@vitejs/plugin-vue': [ '4.6.2' ],
+139 silly audit   '@vue/compiler-core': [ '3.5.34' ],
+139 silly audit   '@vue/compiler-dom': [ '3.5.34' ],
+139 silly audit   '@vue/compiler-sfc': [ '3.5.34' ],
+139 silly audit   '@vue/compiler-ssr': [ '3.5.34' ],
+139 silly audit   '@vue/devtools-api': [ '6.6.4' ],
+139 silly audit   '@vue/reactivity': [ '3.5.34' ],
+139 silly audit   '@vue/runtime-core': [ '3.5.34' ],
+139 silly audit   '@vue/runtime-dom': [ '3.5.34' ],
+139 silly audit   '@vue/server-renderer': [ '3.5.34' ],
+139 silly audit   '@vue/shared': [ '3.5.34' ],
+139 silly audit   '@vueuse/core': [ '14.3.0' ],
+139 silly audit   '@vueuse/metadata': [ '14.3.0' ],
+139 silly audit   '@vueuse/shared': [ '14.3.0' ],
+139 silly audit   'async-validator': [ '4.2.5' ],
+139 silly audit   asynckit: [ '0.4.0' ],
+139 silly audit   axios: [ '1.16.0' ],
+139 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+139 silly audit   chokidar: [ '4.0.3' ],
+139 silly audit   'combined-stream': [ '1.0.8' ],
+139 silly audit   csstype: [ '3.2.3' ],
+139 silly audit   dayjs: [ '1.11.20' ],
+139 silly audit   'delayed-stream': [ '1.0.0' ],
+139 silly audit   'detect-libc': [ '2.1.2' ],
+139 silly audit   'dunder-proto': [ '1.0.1' ],
+139 silly audit   echarts: [ '5.6.0' ],
+139 silly audit   'element-plus': [ '2.14.0' ],
+139 silly audit   entities: [ '7.0.1' ],
+139 silly audit   'es-define-property': [ '1.0.1' ],
+139 silly audit   'es-errors': [ '1.3.0' ],
+139 silly audit   'es-object-atoms': [ '1.1.1' ],
+139 silly audit   'es-set-tostringtag': [ '2.1.0' ],
+139 silly audit   esbuild: [ '0.18.20' ],
+139 silly audit   'estree-walker': [ '2.0.2' ],
+139 silly audit   'follow-redirects': [ '1.16.0' ],
+139 silly audit   'form-data': [ '4.0.5' ],
+139 silly audit   fsevents: [ '2.3.3' ],
+139 silly audit   'function-bind': [ '1.1.2' ],
+139 silly audit   'get-intrinsic': [ '1.3.0' ],
+139 silly audit   'get-proto': [ '1.0.1' ],
+139 silly audit   gopd: [ '1.2.0' ],
+139 silly audit   'has-symbols': [ '1.1.0' ],
+139 silly audit   'has-tostringtag': [ '1.0.2' ],
+139 silly audit   hasown: [ '2.0.3' ],
+139 silly audit   immutable: [ '5.1.5' ],
+139 silly audit   'is-extglob': [ '2.1.1' ],
+139 silly audit   'is-glob': [ '4.0.3' ],
+139 silly audit   lodash: [ '4.18.1' ],
+139 silly audit   'lodash-es': [ '4.18.1' ],
+139 silly audit   'lodash-unified': [ '1.0.3' ],
+139 silly audit   'magic-string': [ '0.30.21' ],
+139 silly audit   'math-intrinsics': [ '1.1.0' ],
+139 silly audit   'memoize-one': [ '6.0.0' ],
+139 silly audit   'mime-db': [ '1.52.0' ],
+139 silly audit   'mime-types': [ '2.1.35' ],
+139 silly audit   nanoid: [ '3.3.12' ],
+139 silly audit   'node-addon-api': [ '7.1.1' ],
+139 silly audit   'normalize-wheel-es': [ '1.2.0' ],
+139 silly audit   picocolors: [ '1.1.1' ],
+139 silly audit   picomatch: [ '4.0.4' ],
+139 silly audit   pinia: [ '2.3.1' ],
+139 silly audit   postcss: [ '8.5.14' ],
+139 silly audit   'proxy-from-env': [ '2.1.0' ],
+139 silly audit   readdirp: [ '4.1.2' ],
+139 silly audit   rollup: [ '3.30.0' ],
+139 silly audit   sass: [ '1.99.0' ],
+139 silly audit   'source-map-js': [ '1.2.1' ],
+139 silly audit   three: [ '0.184.0' ],
+139 silly audit   tslib: [ '2.3.0' ],
+139 silly audit   vite: [ '4.5.14' ],
+139 silly audit   vue: [ '3.5.34' ],
+139 silly audit   'vue-component-type-helpers': [ '3.2.8' ],
+139 silly audit   'vue-demi': [ '0.14.10' ],
+139 silly audit   'vue-router': [ '4.6.4' ],
+139 silly audit   zrender: [ '5.6.1' ],
+139 silly audit   html2canvas: [ '1.4.1' ],
+139 silly audit   jspdf: [ '4.2.1' ],
+139 silly audit   'css-line-break': [ '2.1.0' ],
+139 silly audit   'text-segmentation': [ '1.0.3' ],
+139 silly audit   utrie: [ '1.0.2' ],
+139 silly audit   '@babel/runtime': [ '7.29.2' ],
+139 silly audit   canvg: [ '3.0.11' ],
+139 silly audit   'core-js': [ '3.49.0' ],
+139 silly audit   dompurify: [ '3.4.5' ],
+139 silly audit   'fast-png': [ '6.4.0' ],
+139 silly audit   fflate: [ '0.8.3' ],
+139 silly audit   '@types/raf': [ '3.4.3' ],
+139 silly audit   raf: [ '3.4.1' ],
+139 silly audit   'regenerator-runtime': [ '0.13.11' ],
+139 silly audit   rgbcolor: [ '1.0.1' ],
+139 silly audit   'stackblur-canvas': [ '2.7.0' ],
+139 silly audit   'svg-pathdata': [ '6.0.3' ],
+139 silly audit   '@types/trusted-types': [ '2.0.7' ],
+139 silly audit   '@types/pako': [ '2.0.4' ],
+139 silly audit   iobuffer: [ '5.4.0' ],
+139 silly audit   pako: [ '2.1.0' ],
+139 silly audit   'performance-now': [ '2.1.0' ],
+139 silly audit   'base64-arraybuffer': [ '1.0.2' ]
+139 silly audit }
+140 http cache @types/pako@https://registry.npmjs.org/@types/pako/-/pako-2.0.4.tgz 0ms (cache hit)
+141 http cache pako@https://registry.npmjs.org/pako/-/pako-2.1.0.tgz 0ms (cache hit)
+142 http cache base64-arraybuffer@https://registry.npmjs.org/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz 0ms (cache hit)
+143 http cache performance-now@https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz 0ms (cache hit)
+144 http cache @types/trusted-types@https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.7.tgz 0ms (cache hit)
+145 http cache iobuffer@https://registry.npmjs.org/iobuffer/-/iobuffer-5.4.0.tgz 0ms (cache hit)
+146 http cache svg-pathdata@https://registry.npmjs.org/svg-pathdata/-/svg-pathdata-6.0.3.tgz 0ms (cache hit)
+147 http cache regenerator-runtime@https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz 0ms (cache hit)
+148 http cache stackblur-canvas@https://registry.npmjs.org/stackblur-canvas/-/stackblur-canvas-2.7.0.tgz 0ms (cache hit)
+149 http cache raf@https://registry.npmjs.org/raf/-/raf-3.4.1.tgz 0ms (cache hit)
+150 http cache dompurify@https://registry.npmjs.org/dompurify/-/dompurify-3.4.5.tgz 0ms (cache hit)
+151 http cache @types/raf@https://registry.npmjs.org/@types/raf/-/raf-3.4.3.tgz 1ms (cache hit)
+152 http cache fflate@https://registry.npmjs.org/fflate/-/fflate-0.8.3.tgz 0ms (cache hit)
+153 http cache core-js@https://registry.npmjs.org/core-js/-/core-js-3.49.0.tgz 0ms (cache hit)
+154 http cache rgbcolor@https://registry.npmjs.org/rgbcolor/-/rgbcolor-1.0.1.tgz 0ms (cache hit)
+155 http cache @babel/runtime@https://registry.npmjs.org/@babel/runtime/-/runtime-7.29.2.tgz 0ms (cache hit)
+156 http cache fast-png@https://registry.npmjs.org/fast-png/-/fast-png-6.4.0.tgz 0ms (cache hit)
+157 http cache text-segmentation@https://registry.npmjs.org/text-segmentation/-/text-segmentation-1.0.3.tgz 0ms (cache hit)
+158 http cache css-line-break@https://registry.npmjs.org/css-line-break/-/css-line-break-2.1.0.tgz 0ms (cache hit)
+159 http cache canvg@https://registry.npmjs.org/canvg/-/canvg-3.0.11.tgz 0ms (cache hit)
+160 silly tarball no local data for @types/pako@https://registry.npmjs.org/@types/pako/-/pako-2.0.4.tgz. Extracting by manifest.
+161 silly tarball no local data for pako@https://registry.npmjs.org/pako/-/pako-2.1.0.tgz. Extracting by manifest.
+162 silly tarball no local data for base64-arraybuffer@https://registry.npmjs.org/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz. Extracting by manifest.
+163 silly tarball no local data for performance-now@https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz. Extracting by manifest.
+164 silly tarball no local data for @types/trusted-types@https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.7.tgz. Extracting by manifest.
+165 silly tarball no local data for iobuffer@https://registry.npmjs.org/iobuffer/-/iobuffer-5.4.0.tgz. Extracting by manifest.
+166 silly tarball no local data for svg-pathdata@https://registry.npmjs.org/svg-pathdata/-/svg-pathdata-6.0.3.tgz. Extracting by manifest.
+167 silly tarball no local data for regenerator-runtime@https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz. Extracting by manifest.
+168 silly tarball no local data for stackblur-canvas@https://registry.npmjs.org/stackblur-canvas/-/stackblur-canvas-2.7.0.tgz. Extracting by manifest.
+169 http cache jspdf@https://registry.npmjs.org/jspdf/-/jspdf-4.2.1.tgz 0ms (cache hit)
+170 silly tarball no local data for raf@https://registry.npmjs.org/raf/-/raf-3.4.1.tgz. Extracting by manifest.
+171 http cache html2canvas@https://registry.npmjs.org/html2canvas/-/html2canvas-1.4.1.tgz 0ms (cache hit)
+172 silly tarball no local data for dompurify@https://registry.npmjs.org/dompurify/-/dompurify-3.4.5.tgz. Extracting by manifest.
+173 silly tarball no local data for @types/raf@https://registry.npmjs.org/@types/raf/-/raf-3.4.3.tgz. Extracting by manifest.
+174 http cache utrie@https://registry.npmjs.org/utrie/-/utrie-1.0.2.tgz 0ms (cache hit)
+175 silly tarball no local data for fflate@https://registry.npmjs.org/fflate/-/fflate-0.8.3.tgz. Extracting by manifest.
+176 silly tarball no local data for core-js@https://registry.npmjs.org/core-js/-/core-js-3.49.0.tgz. Extracting by manifest.
+177 silly tarball no local data for rgbcolor@https://registry.npmjs.org/rgbcolor/-/rgbcolor-1.0.1.tgz. Extracting by manifest.
+178 silly tarball no local data for @babel/runtime@https://registry.npmjs.org/@babel/runtime/-/runtime-7.29.2.tgz. Extracting by manifest.
+179 silly tarball no local data for fast-png@https://registry.npmjs.org/fast-png/-/fast-png-6.4.0.tgz. Extracting by manifest.
+180 silly tarball no local data for text-segmentation@https://registry.npmjs.org/text-segmentation/-/text-segmentation-1.0.3.tgz. Extracting by manifest.
+181 silly tarball no local data for css-line-break@https://registry.npmjs.org/css-line-break/-/css-line-break-2.1.0.tgz. Extracting by manifest.
+182 silly tarball no local data for canvg@https://registry.npmjs.org/canvg/-/canvg-3.0.11.tgz. Extracting by manifest.
+183 silly tarball no local data for jspdf@https://registry.npmjs.org/jspdf/-/jspdf-4.2.1.tgz. Extracting by manifest.
+184 silly tarball no local data for html2canvas@https://registry.npmjs.org/html2canvas/-/html2canvas-1.4.1.tgz. Extracting by manifest.
+185 silly tarball no local data for utrie@https://registry.npmjs.org/utrie/-/utrie-1.0.2.tgz. Extracting by manifest.
+186 http fetch GET 200 https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.7.tgz 133ms (cache miss)
+187 http fetch GET 200 https://registry.npmjs.org/@types/pako/-/pako-2.0.4.tgz 137ms (cache miss)
+188 http fetch GET 200 https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz 173ms (cache miss)
+189 http fetch GET 200 https://registry.npmjs.org/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz 182ms (cache miss)
+190 http fetch GET 200 https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz 194ms (cache miss)
+191 http fetch GET 200 https://registry.npmjs.org/iobuffer/-/iobuffer-5.4.0.tgz 205ms (cache miss)
+192 http fetch GET 200 https://registry.npmjs.org/stackblur-canvas/-/stackblur-canvas-2.7.0.tgz 209ms (cache miss)
+193 http fetch GET 200 https://registry.npmjs.org/rgbcolor/-/rgbcolor-1.0.1.tgz 218ms (cache miss)
+194 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 268ms
+195 silly audit report {
+195 silly audit report   esbuild: [
+195 silly audit report     {
+195 silly audit report       id: 1102341,
+195 silly audit report       url: 'https://github.com/advisories/GHSA-67mh-4wv8-2f99',
+195 silly audit report       title: 'esbuild enables any website to send any requests to the development server and read the response',
+195 silly audit report       severity: 'moderate',
+195 silly audit report       vulnerable_versions: '<=0.24.2',
+195 silly audit report       cwe: [Array],
+195 silly audit report       cvss: [Object]
+195 silly audit report     }
+195 silly audit report   ],
+195 silly audit report   vite: [
+195 silly audit report     {
+195 silly audit report       id: 1107323,
+195 silly audit report       url: 'https://github.com/advisories/GHSA-g4jq-h2w9-997c',
+195 silly audit report       title: 'Vite middleware may serve files starting with the same name with the public directory',
+195 silly audit report       severity: 'low',
+195 silly audit report       vulnerable_versions: '<=5.4.19',
+195 silly audit report       cwe: [Array],
+195 silly audit report       cvss: [Object]
+195 silly audit report     },
+195 silly audit report     {
+195 silly audit report       id: 1107327,
+195 silly audit report       url: 'https://github.com/advisories/GHSA-jqfw-vq24-v9c3',
+195 silly audit report       title: "Vite's `server.fs` settings were not applied to HTML files",
+195 silly audit report       severity: 'low',
+195 silly audit report       vulnerable_versions: '<=5.4.19',
+195 silly audit report       cwe: [Array],
+195 silly audit report       cvss: [Object]
+195 silly audit report     },
+195 silly audit report     {
+195 silly audit report       id: 1109132,
+195 silly audit report       url: 'https://github.com/advisories/GHSA-93m4-6634-74q7',
+195 silly audit report       title: 'vite allows server.fs.deny bypass via backslash on Windows',
+195 silly audit report       severity: 'moderate',
+195 silly audit report       vulnerable_versions: '>=4.5.3 <5.0.0',
+195 silly audit report       cwe: [Array],
+195 silly audit report       cvss: [Object]
+195 silly audit report     },
+195 silly audit report     {
+195 silly audit report       id: 1116229,
+195 silly audit report       url: 'https://github.com/advisories/GHSA-4w7w-66w2-5vf9',
+195 silly audit report       title: 'Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling',
+195 silly audit report       severity: 'moderate',
+195 silly audit report       vulnerable_versions: '<=6.4.1',
+195 silly audit report       cwe: [Array],
+195 silly audit report       cvss: [Object]
+195 silly audit report     }
+195 silly audit report   ]
+195 silly audit report }
+196 silly packumentCache corgi:https://registry.npmjs.org/esbuild cache-miss
+197 silly packumentCache corgi:https://registry.npmjs.org/vite cache-miss
+198 http fetch GET 200 https://registry.npmjs.org/svg-pathdata/-/svg-pathdata-6.0.3.tgz 280ms (cache miss)
+199 http fetch GET 200 https://registry.npmjs.org/raf/-/raf-3.4.1.tgz 390ms (cache miss)
+200 http fetch GET 200 https://registry.npmjs.org/text-segmentation/-/text-segmentation-1.0.3.tgz 388ms (cache miss)
+201 http fetch GET 200 https://registry.npmjs.org/esbuild 154ms (cache revalidated)
+202 silly packumentCache corgi:https://registry.npmjs.org/esbuild set size:885757 disposed:false
+203 http fetch GET 200 https://registry.npmjs.org/@types/raf/-/raf-3.4.3.tgz 410ms (cache miss)
+204 http fetch GET 200 https://registry.npmjs.org/css-line-break/-/css-line-break-2.1.0.tgz 449ms (cache miss)
+205 http fetch GET 200 https://registry.npmjs.org/utrie/-/utrie-1.0.2.tgz 473ms (cache miss)
+206 http fetch GET 200 https://registry.npmjs.org/pako/-/pako-2.1.0.tgz 493ms (cache miss)
+207 http fetch GET 200 https://registry.npmjs.org/fflate/-/fflate-0.8.3.tgz 540ms (cache miss)
+208 http fetch GET 200 https://registry.npmjs.org/vite 319ms (cache updated)
+209 silly packumentCache corgi:https://registry.npmjs.org/vite set size:undefined disposed:false
+210 http fetch GET 200 https://registry.npmjs.org/dompurify/-/dompurify-3.4.5.tgz 655ms (cache miss)
+211 silly packumentCache corgi:https://registry.npmjs.org/@vitejs%2fplugin-vue cache-miss
+212 http fetch GET 200 https://registry.npmjs.org/@vitejs%2fplugin-vue 206ms (cache updated)
+213 silly packumentCache corgi:https://registry.npmjs.org/@vitejs%2fplugin-vue set size:undefined disposed:false
+214 http fetch GET 200 https://registry.npmjs.org/fast-png/-/fast-png-6.4.0.tgz 936ms (cache miss)
+215 http fetch GET 200 https://registry.npmjs.org/jspdf/-/jspdf-4.2.1.tgz 1191ms (cache miss)
+216 http fetch GET 200 https://registry.npmjs.org/canvg/-/canvg-3.0.11.tgz 1231ms (cache miss)
+217 http fetch GET 200 https://registry.npmjs.org/@babel/runtime/-/runtime-7.29.2.tgz 1296ms (cache miss)
+218 http fetch GET 200 https://registry.npmjs.org/html2canvas/-/html2canvas-1.4.1.tgz 1946ms (cache miss)
+219 http fetch GET 200 https://registry.npmjs.org/core-js/-/core-js-3.49.0.tgz 5863ms (cache miss)
+220 info run core-js@3.49.0 postinstall node_modules/core-js node -e "try{require('./postinstall')}catch(e){}"
+221 info run core-js@3.49.0 postinstall { code: 0, signal: null }
+222 silly ADD node_modules/base64-arraybuffer
+223 silly ADD node_modules/performance-now
+224 silly ADD node_modules/pako
+225 silly ADD node_modules/iobuffer
+226 silly ADD node_modules/@types/pako
+227 silly ADD node_modules/@types/trusted-types
+228 silly ADD node_modules/svg-pathdata
+229 silly ADD node_modules/stackblur-canvas
+230 silly ADD node_modules/rgbcolor
+231 silly ADD node_modules/regenerator-runtime
+232 silly ADD node_modules/raf
+233 silly ADD node_modules/@types/raf
+234 silly ADD node_modules/fflate
+235 silly ADD node_modules/fast-png
+236 silly ADD node_modules/dompurify
+237 silly ADD node_modules/core-js
+238 silly ADD node_modules/canvg
+239 silly ADD node_modules/@babel/runtime
+240 silly ADD node_modules/utrie
+241 silly ADD node_modules/text-segmentation
+242 silly ADD node_modules/css-line-break
+243 silly ADD node_modules/jspdf
+244 silly ADD node_modules/html2canvas
+245 verbose cwd D:\github\Memento\memento-ai-frontend
+246 verbose os Windows_NT 10.0.26200
+247 verbose node v24.14.1
+248 verbose npm  v11.11.0
+249 verbose exit 0
+250 info ok

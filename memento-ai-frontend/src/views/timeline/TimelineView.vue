@@ -1,11 +1,10 @@
 <template>
   <div class="timeline-container">
-    <div class="timeline-header">
-      <div class="title-section">
-        <h2 class="timeline-title">时光长河</h2>
-        <p class="timeline-subtitle">追溯过往，见证成长的每一个瞬间</p>
-      </div>
-      <div class="timeline-actions">
+    <div class="museum-header">
+      <h1 class="museum-title">时光长河</h1>
+      <p class="museum-subtitle">追溯过往，见证成长的每一个瞬间</p>
+      
+      <div class="header-actions">
         <el-button-group class="view-toggle">
           <el-button :type="viewType === 'vertical' ? 'primary' : ''" @click="viewType = 'vertical'">
             <el-icon><Sort /></el-icon>纵向
@@ -24,7 +23,7 @@
           <el-empty description="暂无时光记录" />
         </div>
         <div 
-          v-for="(item, index) in sortedTimeline" 
+          v-for="item in sortedTimeline" 
           :key="item.id" 
           class="timeline-item"
           :class="{ 'is-milestone': item.isMilestone }"
@@ -37,8 +36,19 @@
           >
             <span v-if="item.isMilestone" class="milestone-icon">⭐</span>
           </div>
-          <div class="timeline-card" @click="handleView(item)">
-            <div class="card-header">
+          <div 
+            class="timeline-card" 
+            @click="handleView(item)"
+            :style="{ 
+              backgroundImage: item.photoUrl ? `url(${item.photoUrl})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }"
+            :class="{ 'has-photo': !!item.photoUrl }"
+          >
+            <div class="card-overlay" v-if="item.photoUrl"></div>
+            <div class="card-content">
+              <div class="card-header">
               <span class="date">{{ item.eventDate }}</span>
               <el-tag v-if="item.isMilestone" class="milestone-tag" effect="dark">
                 {{ item.milestone?.nodeType || '里程碑' }}
@@ -55,8 +65,9 @@
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- 横向时间轴 -->
+    <!-- 横向时间轴 -->
       <div v-else class="horizontal-timeline">
         <div class="timeline-track">
           <div class="timeline-axis"></div>
@@ -170,34 +181,45 @@ onMounted(() => {
   background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
 }
 
-.timeline-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 40px;
+.museum-header {
+  text-align: center;
+  margin-bottom: 60px;
   
-  .title-section {
-    .timeline-title { 
-      margin: 0 0 8px 0; 
-      color: #fff; 
-      font-size: 32px; 
-      font-weight: 700;
-      text-shadow: 0 0 30px rgba(127, 90, 240, 0.5);
-      letter-spacing: 2px;
-    }
-    .timeline-subtitle { margin: 0; color: #94a1b2; font-size: 15px; }
+  .museum-title {
+    font-size: 42px;
+    background: linear-gradient(to bottom, #fff, #94a1b2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
   }
-  
-  .view-toggle {
-    :deep(.el-button) {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.1);
-      color: #94a1b2;
-      
-      &.is-primary {
-        background: linear-gradient(135deg, #7f5af0, #9d4edd);
-        border-color: #7f5af0;
-        color: #fff;
+
+  .museum-subtitle {
+    color: var(--accent-mystic);
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-top: 15px;
+    opacity: 0.8;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+    
+    .view-toggle {
+      :deep(.el-button) {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #94a1b2;
+        
+        &.el-button--primary {
+          background: linear-gradient(135deg, #7f5af0, #9d4edd);
+          border-color: #7f5af0;
+          color: #fff;
+        }
       }
     }
   }
@@ -265,6 +287,23 @@ onMounted(() => {
         cursor: pointer;
         transition: all 0.3s;
         border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+
+        &.has-photo {
+          border: none;
+          .card-content {
+            position: relative;
+            z-index: 2;
+          }
+        }
+
+        .card-overlay {
+          position: absolute;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8));
+          z-index: 1;
+        }
         
         &:hover {
           transform: translateX(15px);
@@ -304,8 +343,9 @@ onMounted(() => {
           color: #94a1b2;
           line-height: 1.6;
           display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
           overflow: hidden;
         }
         

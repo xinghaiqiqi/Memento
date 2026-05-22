@@ -22,6 +22,7 @@ public class Memory {
     private String content;
     private LocalDate eventDate;
     private String tags;
+    private String photoUrl;
     private BigDecimal sentimentScore;
     private LocalDateTime sentimentAnalyzedAt;
     

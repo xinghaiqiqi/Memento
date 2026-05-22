@@ -16,6 +16,7 @@ public class TimelineNodeDTO {
     private BigDecimal sentimentScore;
     private String sentimentColor;
     private String tags;
+    private String photoUrl;
     
     private Boolean isMilestone;
     private MilestoneInfo milestone;

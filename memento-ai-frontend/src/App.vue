@@ -9,8 +9,8 @@
       <el-container v-if="!isFullScreen">
         <el-aside :width="isCollapse ? '80px' : '280px'" class="aside-container">
           <div class="logo">
-            <span v-if="!isCollapse">MEMENTO</span>
-            <span v-else>M</span>
+            <span v-if="!isCollapse">拾光记</span>
+            <span v-else>拾</span>
           </div>
           <el-menu
             :default-active="activeMenu"
@@ -222,6 +222,7 @@ $shadows-big:    multiple-box-shadow(100);
     /* 还原为紫色梦幻渐变 */
     background: linear-gradient(to bottom, #ffffff, var(--accent-primary));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 15px rgba(127, 90, 240, 0.4));
     font-weight: 700;
@@ -334,6 +335,7 @@ $shadows-big:    multiple-box-shadow(100);
       text-shadow: 0 0 15px rgba(127, 90, 240, 0.4);
       background: linear-gradient(to right, #fff, #94a1b2);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
   }

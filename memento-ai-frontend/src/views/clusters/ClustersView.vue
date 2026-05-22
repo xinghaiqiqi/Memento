@@ -1,10 +1,9 @@
 <template>
   <div class="clusters-container museum-fade-in">
-    <div class="clusters-header">
-      <div class="title-section">
-        <h2 class="museum-title">Memory Nebula</h2>
-        <p class="museum-subtitle">漫步在记忆的星云中，探索灵魂的交织</p>
-      </div>
+    <div class="museum-header">
+      <h1 class="museum-title">记忆星云</h1>
+      <p class="museum-subtitle">漫步在记忆的星云中，探索灵魂的交织</p>
+      
       <div class="header-actions">
         <button class="ritual-button small" @click="handleRunCluster" :disabled="clustering">
           <span>{{ clustering ? '正在编织星云...' : '重新聚类' }}</span>
@@ -42,11 +41,14 @@
         <el-divider />
         <div class="memory-list">
           <div v-for="memory in selectedCluster.memories" :key="memory.id" class="memory-item">
-            <div class="item-header">
-              <span class="date">{{ memory.eventDate }}</span>
-              <span class="title">{{ memory.title }}</span>
+            <div v-if="memory.photoUrl" class="item-photo" :style="{ backgroundImage: `url(${memory.photoUrl})` }"></div>
+            <div class="item-body">
+              <div class="item-header">
+                <span class="date">{{ memory.eventDate }}</span>
+                <span class="title">{{ memory.title }}</span>
+              </div>
+              <p class="content">{{ memory.content }}</p>
             </div>
-            <p class="content">{{ memory.content }}</p>
           </div>
         </div>
       </div>
@@ -345,12 +347,35 @@ const handleRunCluster = async () => {
   overflow: hidden;
 }
 
-.clusters-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+.museum-header {
+  text-align: center;
+  margin-bottom: 40px;
   z-index: 10;
+  
+  .museum-title {
+    font-size: 42px;
+    background: linear-gradient(to bottom, #fff, #94a1b2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+  }
+
+  .museum-subtitle {
+    color: var(--accent-mystic);
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-top: 15px;
+    opacity: 0.8;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+  }
 }
 
 .nebula-canvas-wrapper {
@@ -408,17 +433,32 @@ const handleRunCluster = async () => {
     margin-bottom: 30px;
   }
   .memory-list {
-    .memory-item {
-      margin-bottom: 25px;
-      padding: 25px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      transition: all 0.3s;
-      
-      &:hover { border-color: var(--accent-primary); transform: translateX(10px); background: rgba(127, 90, 240, 0.05); }
+      .memory-item {
+        margin-bottom: 25px;
+        padding: 25px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        transition: all 0.3s;
+        display: flex;
+        gap: 20px;
+        
+        &:hover { border-color: var(--accent-primary); transform: translateX(10px); background: rgba(127, 90, 240, 0.05); }
 
-      .item-header {
+        .item-photo {
+          width: 100px;
+          height: 100px;
+          border-radius: 8px;
+          background-size: cover;
+          background-position: center;
+          flex-shrink: 0;
+        }
+
+        .item-body {
+          flex: 1;
+        }
+
+        .item-header {
         margin-bottom: 12px;
         display: flex;
         align-items: center;

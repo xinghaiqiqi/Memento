@@ -13,6 +13,7 @@ public class GalleryCardDTO {
     private String summary;
     private LocalDate eventDate;
     private String tags;
+    private String photoUrl;
     private BigDecimal sentimentScore;
     private String sentimentColor;
     private String topicName;

@@ -1,7 +1,7 @@
 <template>
   <div class="sentiment-container museum-fade-in">
     <div class="museum-header">
-      <h1 class="museum-title">Sentiment Spectrum</h1>
+      <h1 class="museum-title">情感光谱</h1>
       <p class="museum-subtitle">捕捉情感的波长，洞察灵魂的起伏</p>
     </div>
 
@@ -182,6 +182,7 @@ const initHeatmap = () => {
     font-size: 42px;
     background: linear-gradient(to bottom, #fff, #94a1b2);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
   }

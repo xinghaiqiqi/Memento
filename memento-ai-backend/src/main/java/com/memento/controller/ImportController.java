@@ -1,7 +1,6 @@
 package com.memento.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.memento.entity.ImportLog;
 import com.memento.entity.Memory;
 import com.memento.service.MemoryService;
 import com.memento.util.AiUtils;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

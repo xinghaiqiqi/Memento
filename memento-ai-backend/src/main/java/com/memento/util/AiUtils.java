@@ -132,6 +132,9 @@ public class AiUtils {
         if (prompt.contains("提取") || "extract".equals(type)) {
             return "[{\"title\":\"示例记忆\",\"content\":\"这是一条演示数据。\",\"eventDate\":\"2024-05-20\"}]";
         }
+        if (prompt.contains("风格") || prompt.contains("故事")) {
+            return "这是一段在演示模式下生成的记忆叙事。\n在时光的流转中，我们抓住了那些闪光的瞬间。\n虽然现在是演示模式，但您的记忆依然在这里熠熠生辉。";
+        }
         return "[]";
     }
 

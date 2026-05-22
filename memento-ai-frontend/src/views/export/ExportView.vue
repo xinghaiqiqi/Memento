@@ -1,10 +1,8 @@
 <template>
   <div class="export-container">
-    <div class="export-header">
-      <div class="title-section">
-        <h2>导出报告</h2>
-        <p>将你的记忆珍藏成册，支持 PDF 格式</p>
-      </div>
+    <div class="museum-header">
+      <h1 class="museum-title">永恒归档</h1>
+      <p class="museum-subtitle">将你的记忆珍藏成册，支持 PDF 格式</p>
     </div>
 
     <div class="export-body">
@@ -15,9 +13,9 @@
             <el-form :model="exportConfig" label-width="100px">
               <el-form-item label="导出范围">
                 <el-radio-group v-model="exportConfig.range">
-                  <el-radio label="all">全部记忆</el-radio>
-                  <el-radio label="date">指定日期</el-radio>
-                  <el-radio label="cluster">指定主题</el-radio>
+                  <el-radio value="all">全部记忆</el-radio>
+                  <el-radio value="date">指定日期</el-radio>
+                  <el-radio value="cluster">指定主题</el-radio>
                 </el-radio-group>
               </el-form-item>
               
@@ -112,11 +110,26 @@ const handleExport = () => {
   padding: 40px;
   min-height: calc(100vh - 60px);
 
-  .export-header {
-    margin-bottom: 50px;
-    .title-section {
-      h2 { margin: 0 0 10px 0; color: #fff; font-size: 32px; text-shadow: 0 0 15px rgba(127, 90, 240, 0.4); }
-      p { margin: 0; color: #94a1b2; font-size: 16px; letter-spacing: 1px; }
+  .museum-header {
+    text-align: center;
+    margin-bottom: 60px;
+    
+    .museum-title {
+      font-size: 42px;
+      background: linear-gradient(to bottom, #fff, #94a1b2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+    }
+
+    .museum-subtitle {
+      color: var(--accent-mystic);
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin-top: 15px;
+      opacity: 0.8;
+      text-transform: uppercase;
     }
   }
 

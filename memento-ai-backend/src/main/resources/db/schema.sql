@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS memories (
     content TEXT NOT NULL,
     event_date DATE NOT NULL,
     tags VARCHAR(255),
+    photo_url VARCHAR(500),
     sentiment_score DECIMAL(3,2) DEFAULT 0,
     sentiment_analyzed_at TIMESTAMP NULL,
     embedding JSON,
@@ -27,6 +28,9 @@ CREATE TABLE IF NOT EXISTS memories (
 CREATE INDEX IF NOT EXISTS idx_user_date ON memories(user_id, event_date);
 CREATE INDEX IF NOT EXISTS idx_user_deleted ON memories(user_id, is_deleted);
 CREATE INDEX IF NOT EXISTS idx_sentiment ON memories(sentiment_score);
+
+-- 确保旧数据表包含 photo_url 字段
+ALTER TABLE memories ADD COLUMN IF NOT EXISTS photo_url VARCHAR(500);
 
 -- 表3：topic_clusters（主题簇表）
 CREATE TABLE IF NOT EXISTS topic_clusters (

@@ -110,6 +110,7 @@ h1, h2, .museum-title {
   font-size: 42px;
   background: linear-gradient(to bottom, #ffffff 40%, #a0aec0 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
   filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
@@ -144,6 +145,7 @@ h1, h2, .museum-title {
     padding: 1px;
     background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 50%, rgba(157, 80, 187, 0.3));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
     pointer-events: none;
   }
@@ -160,6 +162,7 @@ h1, h2, .museum-title {
       letter-spacing: 3px;
       background: linear-gradient(to right, #fff, #a0aec0);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
       font-weight: 700;
     }
@@ -403,6 +406,7 @@ h1, h2, .museum-title {
 .text-gilded {
   background: var(--gold-gradient);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 8px rgba(191, 149, 63, 0.4));
   font-weight: 700;

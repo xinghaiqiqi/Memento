@@ -1,16 +1,15 @@
 <template>
   <div class="gallery-container">
-    <div class="gallery-header">
-      <div class="title-section">
-        <h2 class="gallery-title">时光画廊</h2>
-        <p class="gallery-subtitle">每一张卡片都是一段珍藏的记忆</p>
-      </div>
-      <div class="filter-actions">
+    <div class="museum-header">
+      <h1 class="museum-title">时光画廊</h1>
+      <p class="museum-subtitle">每一张卡片都是一段珍藏的记忆</p>
+      
+      <div class="header-actions">
         <el-radio-group v-model="sentimentFilter" @change="handleFilterChange">
-          <el-radio-button label="all">全部</el-radio-button>
-          <el-radio-button label="positive">积极</el-radio-button>
-          <el-radio-button label="neutral">中性</el-radio-button>
-          <el-radio-button label="negative">消极</el-radio-button>
+          <el-radio-button value="all">全部</el-radio-button>
+          <el-radio-button value="positive">积极</el-radio-button>
+          <el-radio-button value="neutral">中性</el-radio-button>
+          <el-radio-button value="negative">消极</el-radio-button>
         </el-radio-group>
       </div>
     </div>
@@ -27,8 +26,13 @@
       >
         <div 
           class="memory-card"
-          :style="{ borderLeftColor: memory.sentimentColor }"
+          :style="{ 
+            borderLeftColor: memory.sentimentColor,
+            backgroundImage: memory.photoUrl ? `url(${memory.photoUrl})` : 'none'
+          }"
+          :class="{ 'has-photo': !!memory.photoUrl }"
         >
+          <div class="card-overlay" v-if="memory.photoUrl"></div>
           <div class="card-content">
             <div class="card-header">
               <span class="date">{{ memory.eventDate }}</span>
@@ -147,22 +151,33 @@ onMounted(() => {
   background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
 }
 
-.gallery-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 40px;
+.museum-header {
+  text-align: center;
+  margin-bottom: 60px;
   
-  .title-section {
-    .gallery-title { 
-      margin: 0 0 8px 0; 
-      color: #fff; 
-      font-size: 32px; 
-      font-weight: 700;
-      text-shadow: 0 0 30px rgba(127, 90, 240, 0.5);
-      letter-spacing: 2px;
-    }
-    .gallery-subtitle { margin: 0; color: #94a1b2; font-size: 15px; }
+  .museum-title {
+    font-size: 42px;
+    background: linear-gradient(to bottom, #fff, #94a1b2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+  }
+
+  .museum-subtitle {
+    color: var(--accent-mystic);
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-top: 15px;
+    opacity: 0.8;
+    text-transform: uppercase;
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
   }
 }
 
@@ -187,7 +202,25 @@ onMounted(() => {
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    background-size: cover;
+    background-position: center;
     
+    &.has-photo {
+      border-left: none;
+      .card-content {
+        position: relative;
+        z-index: 2;
+      }
+    }
+
+    .card-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.7));
+      z-index: 1;
+    }
+
     &:hover {
       transform: translateY(-10px) scale(1.02);
       box-shadow: 0 15px 40px rgba(127, 90, 240, 0.2);

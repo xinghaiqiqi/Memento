@@ -38,7 +38,13 @@
             <button class="museum-btn-link" @click="router.push('/memories')">浏览全馆</button>
           </div>
           <div class="cabinet-body">
-            <el-table :data="recentMemories" class="museum-table">
+            <el-table v-loading="loading" :data="recentMemories" class="museum-table">
+              <el-table-column label="影像" width="80">
+                <template #default="{ row }">
+                  <div v-if="row.photoUrl" class="table-photo-preview" :style="{ backgroundImage: `url(${row.photoUrl})` }"></div>
+                  <div v-else class="table-photo-none"></div>
+                </template>
+              </el-table-column>
               <el-table-column prop="eventDate" label="时间印记" width="150" />
               <el-table-column prop="title" label="记忆之名" show-overflow-tooltip />
               <el-table-column prop="sentimentScore" label="情感色彩" width="120">
@@ -192,6 +198,7 @@ const getSentimentLabel = (score) => {
     margin: 0 0 25px 0;
     background: var(--grad-mystic);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 10px rgba(157, 80, 187, 0.3));
   }
@@ -248,6 +255,7 @@ const getSentimentLabel = (score) => {
     margin-bottom: 15px;
     background: linear-gradient(to bottom, #fff, #cbd5e0);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
@@ -280,6 +288,7 @@ const getSentimentLabel = (score) => {
     margin-bottom: 30px;
     background: linear-gradient(to right, #fff, #718096);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 }
@@ -303,6 +312,34 @@ const getSentimentLabel = (score) => {
   font-family: var(--font-title);
   cursor: pointer;
   &:hover { color: #fff; text-decoration: underline; }
+}
+
+.museum-table {
+  background: transparent !important;
+  --el-table-border-color: rgba(255, 255, 255, 0.05);
+  --el-table-header-bg-color: rgba(255, 255, 255, 0.02);
+  --el-table-tr-bg-color: transparent;
+  --el-table-text-color: #a0aec0;
+  --el-table-header-text-color: #fff;
+  
+  &::before { display: none; }
+}
+
+.table-photo-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.table-photo-none {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
 .sentiment-dot {
