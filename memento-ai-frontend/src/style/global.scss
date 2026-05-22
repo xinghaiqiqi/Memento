@@ -2,33 +2,72 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+SC:wght@300;500;700&family=Inter:wght@300;400;600&display=swap');
 
 :root {
-  --galaxy-bg: #0b0e14;
+  --galaxy-bg: #05070a;
   --accent-primary: #7f5af0;
   --accent-secondary: #2cb67d;
   --accent-tertiary: #ef4565;
+  --accent-quaternary: #00d1ff; 
+  --accent-mystic: #9d50bb;     
+  --accent-gold: #bf953f;
+  
+  /* Element Plus 强制暗色变量覆盖 */
+  --el-bg-color: #05070a !important;
+  --el-bg-color-overlay: #12161f !important;
+  --el-fill-color-blank: transparent !important;
+  --el-border-color: rgba(255, 255, 255, 0.1) !important;
+  --el-text-color-primary: #fff !important;
+  --el-text-color-regular: #a0aec0 !important;
+  --el-text-color-placeholder: #4a5568 !important;
+  
   --glass-white: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --glow-shadow: 0 0 20px rgba(127, 90, 240, 0.2);
   --font-title: 'Cinzel', 'Noto Serif SC', serif;
   --font-main: 'Inter', 'PingFang SC', sans-serif;
-  --sidebar-text-unselected: #ffffff;
+  --sidebar-text-unselected: #a0aec0;
+  
+  /* 丰富色彩体系 */
+  --grad-mystic: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
+  --grad-ocean: linear-gradient(135deg, #00d1ff 0%, #0072ff 100%);
+  --grad-emerald: linear-gradient(135deg, #2cb67d 0%, #11998e 100%);
+  --grad-sunset: linear-gradient(135deg, #ff00cc 0%, #333399 100%);
+  --grad-aurora: linear-gradient(270deg, #00d1ff, #9d50bb, #00d1ff);
+  --grad-dark: linear-gradient(180deg, #0f1219 0%, #05070a 100%);
   
   /* 鎏金质感变量 */
   --gold-light: #fcf6ba;
   --gold-mid: #bf953f;
   --gold-dark: #aa771c;
   --gold-gradient: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
-  --gold-glow: 0 0 15px rgba(191, 149, 63, 0.4);
+  --gold-glow: 0 0 20px rgba(191, 149, 63, 0.4);
 }
+
+/* 强制所有组件容器背景透明，由 wrapper 控制颜色 */
+.el-input, .el-select, .el-textarea, .el-cascader {
+  background-color: transparent !important;
+  --el-fill-color-blank: transparent !important;
+}
+
+.el-input__wrapper, .el-select__wrapper, .el-textarea__inner {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
 
 body {
   margin: 0;
   padding: 0;
   background-color: var(--galaxy-bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(127, 90, 240, 0.15) 0, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(0, 209, 255, 0.1) 0, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(157, 80, 187, 0.08) 0, transparent 50%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-blend-mode: overlay;
   color: #fffffe;
   font-family: var(--font-main);
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
+  min-height: 100vh;
 }
 
 /* 艺术化背景装饰：流动的极光 */
@@ -39,172 +78,322 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, rgba(127, 90, 240, 0.05) 0%, transparent 40%),
-              radial-gradient(circle at 20% 30%, rgba(44, 182, 125, 0.03) 0%, transparent 30%),
-              radial-gradient(circle at 80% 70%, rgba(239, 69, 101, 0.03) 0%, transparent 30%);
-  animation: aurora 20s ease-in-out infinite alternate;
+  background: radial-gradient(circle at center, rgba(157, 80, 187, 0.03) 0%, transparent 40%),
+              radial-gradient(circle at 20% 30%, rgba(0, 209, 255, 0.02) 0%, transparent 30%),
+              radial-gradient(circle at 80% 70%, rgba(239, 69, 101, 0.02) 0%, transparent 30%);
+  animation: aurora 30s ease-in-out infinite alternate;
   z-index: -2;
   pointer-events: none;
 }
 
 @keyframes aurora {
-  0% { transform: rotate(0deg) scale(1); }
-  100% { transform: rotate(10deg) scale(1.1); }
+  0% { transform: rotate(0deg) translate(-5%, -5%) scale(1); }
+  100% { transform: rotate(5deg) translate(5%, 5%) scale(1.1); }
 }
 
 /* 高级毛玻璃容器 */
 .glass-container {
-  background: var(--glass-white);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: rgba(15, 18, 24, 0.6);
+  backdrop-filter: blur(25px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
   border-radius: 24px;
 }
 
 /* 艺术化排版 */
 h1, h2, .museum-title {
   font-family: var(--font-title);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  letter-spacing: 0.15em;
 }
 
 .museum-title {
   font-size: 42px;
-  background: linear-gradient(to bottom, #ffffff 60%, #94a1b2 100%);
+  background: linear-gradient(to bottom, #ffffff 40%, #a0aec0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
-  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
-  text-transform: none; /* 保持原样，不强制大写 */
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.15));
+  text-transform: none;
 }
 
-/* Element Plus 组件艺术化重写 */
+/* Element Plus 组件艺术化重写 - 彻底消除白底 */
 
-/* 1. 弹窗 (Dialog) 艺术化 */
+/* 1. 弹窗 (Dialog) & 消息框 (MessageBox) 艺术化 */
 .el-overlay {
   background-color: rgba(0, 0, 0, 0.8) !important;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(20px) saturate(180%);
   z-index: 2000 !important;
 }
 
-.el-dialog, .el-message-box {
-  background: #0f1218 !important;
-  border: 1px solid var(--glass-border) !important;
+.el-dialog, .el-message-box, .museum-dialog {
+  background: #0f1219 !important; 
+  background-image: radial-gradient(circle at top right, rgba(157, 80, 187, 0.1), transparent 40%),
+                    radial-gradient(circle at bottom left, rgba(0, 209, 255, 0.05), transparent 40%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 24px !important;
-  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(127, 90, 240, 0.1) !important;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.8), 
+              inset 0 0 40px rgba(157, 80, 187, 0.03) !important;
   overflow: hidden;
+  position: relative;
 
   &::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+    inset: 0;
+    border-radius: 24px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent 50%, rgba(157, 80, 187, 0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
   }
 
   .el-dialog__header, .el-message-box__header {
     margin-right: 0;
-    padding: 25px 30px;
-    border-bottom: 1px solid var(--glass-border);
+    padding: 32px 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.01) !important;
     .el-dialog__title, .el-message-box__title {
       color: #fff !important;
       font-family: var(--font-title);
-      font-size: 22px;
-      letter-spacing: 2px;
+      font-size: 24px;
+      letter-spacing: 3px;
+      background: linear-gradient(to right, #fff, #a0aec0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 700;
     }
   }
 
   .el-dialog__body, .el-message-box__content {
-    padding: 30px;
-    color: #fffffe !important;
+    padding: 40px;
+    color: #cbd5e0 !important;
     font-size: 16px;
+    line-height: 1.7;
+    background: transparent !important;
   }
 
   .el-dialog__footer, .el-message-box__btns {
-    padding: 20px 30px;
-    border-top: 1px solid var(--glass-border);
-    background: rgba(255, 255, 255, 0.02);
+    padding: 24px 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2) !important;
   }
 }
 
 /* 2. 抽屉 (Drawer) 艺术化 */
-.el-drawer {
-  background: #0f1218 !important;
-  backdrop-filter: blur(30px) !important;
-  border-left: 1px solid var(--glass-border) !important;
-  box-shadow: -15px 0 50px rgba(0, 0, 0, 0.8) !important;
+.el-drawer, .museum-drawer {
+  background: #0a0d14 !important;
+  background-image: linear-gradient(to bottom, #0f1219, #05070a) !important;
+  backdrop-filter: blur(40px) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: -20px 0 80px rgba(0, 0, 0, 0.8) !important;
 
   .el-drawer__header {
     margin-bottom: 0;
-    padding: 30px;
-    border-bottom: 1px solid var(--glass-border);
+    padding: 32px 40px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     color: #fff !important;
+    background: transparent !important;
     span {
       font-family: var(--font-title);
       color: #fff !important;
-      font-size: 24px;
-      letter-spacing: 2px;
+      font-size: 26px;
+      letter-spacing: 4px;
+      font-weight: 700;
     }
   }
   
   .el-drawer__body {
-    padding: 30px;
-    color: #fffffe !important;
+    padding: 40px;
+    color: #e2e8f0 !important;
+    background: transparent !important;
   }
 }
 
-/* 强制覆盖所有 Element Plus 白色背景 */
-.el-popper, .el-select__popper, .el-dropdown__menu, .el-cascader__dropdown {
-  background: #1a1f2b !important;
-  border: 1px solid var(--glass-border) !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+/* 彻底解决 popper 白底问题 - 强制覆盖所有 Element Plus 弹出层 */
+.el-popper, 
+.el-select__popper, 
+.el-dropdown__menu, 
+.el-cascader__dropdown, 
+.el-picker__popper, 
+.el-popover, 
+.el-popconfirm,
+.el-message,
+.el-notification,
+.el-select-dropdown {
+  background: #12161f !important;
+  background-color: #12161f !important;
+  background-image: var(--grad-dark) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.8) !important;
+  border-radius: 16px !important;
+  color: #e2e8f0 !important;
+
+  /* 强制覆盖内部容器 */
+  .el-select-dropdown__list, .el-picker-panel__body {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+
+  /* 箭头样式修正 */
+  .el-popper__arrow::before {
+    background: #12161f !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  }
+  
+  /* 下拉列表项 */
   .el-select-dropdown__item {
     color: #94a1b2;
-    &.hover, &:hover { background: rgba(127, 90, 240, 0.2) !important; color: #fff; }
-    &.selected { color: var(--accent-primary); font-weight: bold; }
+    height: 44px;
+    line-height: 44px;
+    margin: 4px 8px;
+    border-radius: 10px;
+    font-size: 14px;
+    &.hover, &:hover { 
+      background: rgba(157, 80, 187, 0.2) !important; 
+      color: #fff; 
+    }
+    &.selected { 
+      color: #fff; 
+      background: var(--grad-mystic) !important;
+      font-weight: 600;
+    }
   }
+
+  /* 日期选择器面板 */
+  .el-picker-panel {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+    border: none !important;
+    
+    .el-date-range-picker__header { color: #fff; }
+    .el-date-table th { border-bottom: 1px solid rgba(255,255,255,0.05); color: #718096; }
+    .el-date-table td.next-month, .el-date-table td.prev-month { opacity: 0.3; }
+    .el-date-table td.available:hover { color: var(--accent-mystic); }
+    .el-date-table td.in-range .el-date-table-cell {
+      background: rgba(157, 80, 187, 0.1) !important;
+    }
+    .el-date-table td.current:not(.disabled) .el-date-table-cell__text {
+      background: var(--grad-mystic) !important;
+      color: #fff !important;
+    }
+    .el-picker-panel__footer {
+      background: rgba(0, 0, 0, 0.2) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  /* 级联选择器 */
+  .el-cascader-menu {
+    border-right: 1px solid rgba(255,255,255,0.05);
+    background: transparent !important;
+  }
+}
+
+/* 消息通知样式修正 */
+.el-message {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(20px);
+  padding: 15px 25px !important;
+  &--success { border-color: rgba(44, 182, 125, 0.3) !important; }
+  &--error { border-color: rgba(239, 69, 101, 0.3) !important; }
+  .el-message__content { color: #fff !important; font-weight: 500; }
 }
 
 /* 3. 按钮艺术化 */
 .el-button {
-  border-radius: 12px !important;
-  font-weight: 500 !important;
+  border-radius: 14px !important;
+  font-weight: 600 !important;
   letter-spacing: 1px;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: #a0aec0 !important;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+  }
 
   &--primary {
-    background: linear-gradient(135deg, #7f5af0 0%, #4d22c7 100%) !important;
+    background: var(--grad-mystic) !important;
     border: none !important;
+    color: #fff !important;
+    box-shadow: 0 4px 15px rgba(157, 80, 187, 0.3) !important;
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(127, 90, 240, 0.4);
+      box-shadow: 0 8px 25px rgba(157, 80, 187, 0.5) !important;
+      transform: translateY(-2px) scale(1.02);
     }
   }
 
   &.is-link {
-    color: var(--accent-primary);
-    &:hover { color: #fff; }
+    background: transparent !important;
+    border: none !important;
+    color: var(--accent-mystic) !important;
+    &:hover { color: #fff !important; text-decoration: underline; }
   }
 }
 
-/* 4. 侧边栏艺术化 */
+/* 5. 输入框与表单艺术化 */
+.el-input__inner, .el-textarea__inner {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  padding: 12px 15px !important;
+  transition: all 0.3s !important;
+  &:focus {
+    border-color: var(--accent-mystic) !important;
+    box-shadow: 0 0 15px rgba(157, 80, 187, 0.2) !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+  }
+  &::placeholder { color: #4a5568 !important; }
+}
+
+.el-input__wrapper {
+  background: rgba(0, 0, 0, 0.2) !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  &.is-focus {
+    border-color: var(--accent-mystic) !important;
+    box-shadow: 0 0 15px rgba(157, 80, 187, 0.2) !important;
+  }
+}
+
+/* 侧边栏艺术化 */
 .aside-container {
-  border-right: 1px solid var(--glass-border) !important;
+  background: #080a0f !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
   
-  /* 优化菜单项样式，平衡清晰度与美感 */
+  .el-menu {
+    background: transparent !important;
+    border: none !important;
+  }
+
   .el-menu-item {
-    transition: all 0.4s ease !important;
+    height: 56px !important;
+    margin: 8px 16px !important;
+    border-radius: 12px !important;
+    color: #718096 !important;
     
-    .menu-text {
-      transition: all 0.3s ease !important;
+    &:hover {
+      background: rgba(255, 255, 255, 0.03) !important;
+      color: #fff !important;
     }
     
-    &:hover, &.is-active {
-      .menu-text {
-        color: #fff !important;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+    &.is-active {
+      background: rgba(157, 80, 187, 0.1) !important;
+      color: var(--accent-mystic) !important;
+      font-weight: bold;
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0; width: 4px; height: 20px;
+        background: var(--accent-mystic);
+        border-radius: 0 4px 4px 0;
       }
     }
   }
@@ -215,7 +404,7 @@ h1, h2, .museum-title {
   background: var(--gold-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 5px rgba(191, 149, 63, 0.3));
+  filter: drop-shadow(0 0 8px rgba(191, 149, 63, 0.4));
   font-weight: 700;
 }
 
@@ -223,67 +412,66 @@ h1, h2, .museum-title {
 .el-table {
   --el-table-bg-color: transparent !important;
   --el-table-tr-bg-color: transparent !important;
-  --el-table-header-bg-color: rgba(255, 255, 255, 0.03) !important;
+  --el-table-header-bg-color: rgba(255, 255, 255, 0.02) !important;
   --el-table-border-color: rgba(255, 255, 255, 0.05) !important;
-  --el-table-text-color: #94a1b2 !important;
+  --el-table-text-color: #a0aec0 !important;
   --el-table-header-text-color: #fff !important;
-  --el-table-row-hover-bg-color: rgba(127, 90, 240, 0.05) !important;
+  --el-table-row-hover-bg-color: rgba(157, 80, 187, 0.04) !important;
 
   font-size: 14px !important;
   
   th.el-table__cell {
     font-family: var(--font-title);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-size: 12px;
+    letter-spacing: 2px;
+    font-size: 13px;
+    padding: 20px 0 !important;
+    background: transparent !important;
+  }
+  
+  td.el-table__cell {
+    padding: 16px 0 !important;
+    background: transparent !important;
   }
 }
 
 /* 6. 表单元素对比度强化 */
-.el-checkbox, .el-radio {
-  --el-checkbox-text-color: #94a1b2 !important;
-  --el-radio-text-color: #94a1b2 !important;
-  
-  &.is-checked {
-    .el-checkbox__label, .el-radio__label {
-      color: #fff !important;
-      text-shadow: 0 0 10px rgba(127, 90, 240, 0.3);
-    }
-  }
-
-  .el-checkbox__inner, .el-radio__inner {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-  }
-}
-
-.el-input, .el-textarea {
-  --el-input-bg-color: rgba(255, 255, 255, 0.05) !important;
-  --el-input-border-color: rgba(255, 255, 255, 0.1) !important;
+.el-input, .el-textarea, .el-select, .el-select-v2 {
+  --el-input-bg-color: rgba(0, 0, 0, 0.2) !important;
+  --el-input-border-color: rgba(255, 255, 255, 0.08) !important;
   --el-input-text-color: #fff !important;
-  --el-input-placeholder-color: #555e6b !important;
+  --el-select-input-focus-border-color: var(--accent-mystic) !important;
+  --el-fill-color-blank: rgba(0, 0, 0, 0.2) !important;
   
-  .el-input__wrapper, .el-textarea__inner {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
-    &:hover { box-shadow: 0 0 0 1px var(--accent-primary) inset !important; }
-    &.is-focus { box-shadow: 0 0 0 1px var(--accent-primary) inset !important; }
+  .el-input__wrapper, .el-textarea__inner, .el-select__wrapper, .el-select-v2__wrapper {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset !important;
+    border-radius: 14px !important;
+    padding: 12px 16px !important;
+    
+    &:hover { box-shadow: 0 0 0 1px rgba(157, 80, 187, 0.4) inset !important; }
+    &.is-focus { box-shadow: 0 0 0 1px var(--accent-mystic) inset !important; }
+  }
+
+  .el-input__inner, .el-select__input, .el-textarea__inner {
+    color: #fff !important;
   }
 }
 
-/* 7. 步骤条对比度强化 */
-.el-step {
-  .el-step__title {
-    color: #94a1b2 !important;
-    &.is-process { color: #fff !important; font-weight: bold; }
-    &.is-success { color: var(--accent-secondary) !important; }
-  }
-  .el-step__icon {
-    background: transparent !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    &.is-text { color: #94a1b2; }
-  }
-  .el-step__head.is-process {
-    .el-step__icon { border-color: var(--accent-primary) !important; color: #fff; }
+
+.el-select {
+  .el-input.is-focus .el-input__wrapper {
+    box-shadow: 0 0 0 1px var(--accent-mystic) inset !important;
   }
 }
+
+/* 7. 消息提示美化 */
+.el-message {
+  background: #1a1f2b !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+  .el-message__content { color: #fff !important; font-weight: 500; }
+}
+
+

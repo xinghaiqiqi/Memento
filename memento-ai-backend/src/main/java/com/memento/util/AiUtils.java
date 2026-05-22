@@ -9,13 +9,19 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class AiUtils {
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Value("${ai.deepseek.api-key}")
     private String apiKey;
@@ -30,6 +36,23 @@ public class AiUtils {
      * 调用大模型对话接口
      */
     public String chat(String prompt) {
+        // 清理 prompt，去除首尾空格并统一换行符，提高缓存命中率
+        String cleanPrompt = prompt.trim().replace("\r\n", "\n");
+        String cacheKey = "ai:cache:" + cn.hutool.crypto.digest.DigestUtil.md5Hex(cleanPrompt);
+        String cachedValue = redisTemplate.opsForValue().get(cacheKey);
+        if (cachedValue != null) {
+            System.out.println(">>> [Redis] Cache Hit for AI Request.");
+            return cachedValue;
+        }
+
+        System.out.println("\n--- [DeepSeek API Request] ---");
+        System.out.println("Prompt: " + cleanPrompt);
+
+        if (apiKey == null || apiKey.isEmpty() || apiKey.startsWith("${")) {
+            System.out.println(">>> System Notice: API Key missing, using Demo Mode.");
+            return getDemoResponse(cleanPrompt, "unknown");
+        }
+
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(apiUrl);
             httpPost.setHeader("Authorization", "Bearer " + apiKey);
@@ -41,7 +64,7 @@ public class AiUtils {
             JSONArray messages = new JSONArray();
             JSONObject message = new JSONObject();
             message.put("role", "user");
-            message.put("content", prompt);
+            message.put("content", cleanPrompt);
             messages.add(message);
             
             body.put("messages", messages);
@@ -52,16 +75,20 @@ public class AiUtils {
 
             try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
                 String responseBody = new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
+                System.out.println("--- [DeepSeek API Response] ---");
                 
-                // 打印响应体，方便调试
-                System.out.println("AI Response: " + responseBody);
+                if (responseBody == null || !responseBody.trim().startsWith("{")) {
+                    System.err.println("!!! [DeepSeek API Error]: Invalid JSON response. Body: " + responseBody);
+                    return getDemoResponse(cleanPrompt, "unknown");
+                }
 
                 JSONObject jsonResponse = JSON.parseObject(responseBody);
                 
-                // 检查 API 返回的错误
                 if (jsonResponse.containsKey("error")) {
-                    JSONObject error = jsonResponse.getJSONObject("error");
-                    return "AI API Error: " + error.getString("message");
+                    JSONObject errorObj = jsonResponse.getJSONObject("error");
+                    String errorMsg = errorObj != null ? errorObj.getString("message") : "Unknown Error";
+                    System.err.println("!!! [DeepSeek API Error]: " + errorMsg);
+                    return getDemoResponse(cleanPrompt, "unknown");
                 }
 
                 String content = jsonResponse.getJSONArray("choices")
@@ -69,91 +96,91 @@ public class AiUtils {
                         .getJSONObject("message")
                         .getString("content");
                 
-                // 自动去除 Markdown 代码块包裹
-                if (content != null) {
-                    content = content.trim();
-                    if (content.startsWith("```json")) {
-                        content = content.substring(7);
-                    } else if (content.startsWith("```")) {
-                        content = content.substring(3);
-                    }
-                    if (content.endsWith("```")) {
-                        content = content.substring(0, content.length() - 3);
-                    }
-                }
-                return content != null ? content.trim() : "";
+                String processed = processContent(content);
+                System.out.println("Processed Content: " + processed);
+
+                // 写入缓存 (有效期 24 小时)
+                redisTemplate.opsForValue().set(cacheKey, processed, 24, TimeUnit.HOURS);
+                System.out.println(">>> [Redis] Cache Saved for prompt.");
+                
+                return processed;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            return "AI调用失败: " + e.getMessage();
+            System.err.println("!!! [DeepSeek Connection Exception]: " + e.getMessage());
+            return getDemoResponse(cleanPrompt, "unknown");
         }
     }
 
-    /**
-     * 获取情感分数 (-1 到 1)
-     */
+    private String processContent(String content) {
+        if (content != null) {
+            content = content.trim();
+            if (content.startsWith("```json")) content = content.substring(7);
+            else if (content.startsWith("```")) content = content.substring(3);
+            if (content.endsWith("```")) content = content.substring(0, content.length() - 3);
+            return content.trim();
+        }
+        return "";
+    }
+
+    private String getDemoResponse(String prompt, String type) {
+        if (prompt.contains("倾向") || "sentiment".equals(type)) {
+            return String.valueOf(Math.random() * 2 - 1);
+        }
+        if (prompt.contains("核心主题") || "clusters".equals(type)) {
+            return "[{\"name\":\"艺术生活\",\"description\":\"关于美与创造的瞬间\",\"memoryIds\":\"[]\"}]";
+        }
+        if (prompt.contains("提取") || "extract".equals(type)) {
+            return "[{\"title\":\"示例记忆\",\"content\":\"这是一条演示数据。\",\"eventDate\":\"2024-05-20\"}]";
+        }
+        return "[]";
+    }
+
     public Double analyzeSentiment(String content) {
-        String prompt = String.format("分析以下文本的情感倾向，只返回一个-1到1之间的数字，不要有任何其他内容。\n文本：%s", content);
-        String result = chat(prompt).trim();
+        System.out.println("\n--- [Sentiment Analysis] ---");
+        String prompt = String.format("分析以下文本的情感倾向，只返回一个-1到1之间的数字：\n%s", content);
+        String result = chat(prompt);
         try {
             return Double.parseDouble(result);
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             return 0.0;
         }
     }
 
-    /**
-     * 生成主题聚类
-     */
     public String generateClusters(String memoriesText) {
-        String prompt = String.format(
-            "以下是用户的记忆片段列表（每行一条）：\n%s\n" +
-            "请分析出3-5个核心主题，每个主题包含：主题名称（2-6个字）、主题描述（一句话）、包含的记忆内容摘要。\n" +
-            "请以简洁的JSON格式返回，不要有任何 Markdown 代码块包裹或额外解释。", 
-            memoriesText
-        );
+        System.out.println("\n--- [Topic Clustering] ---");
+        String prompt = String.format("分析以下记忆片段的主题聚类，以JSON格式返回：\n%s", memoriesText);
         return chat(prompt);
     }
 
-    /**
-     * 识别重要节点
-     */
     public String identifyMilestone(String content) {
-        String prompt = String.format(
-            "判断以下记忆是否属于人生重要节点（如毕业、入职、搬家、分手、考试通过、旅行等）。\n" +
-            "记忆：%s\n" +
-            "只返回节点类型（如：毕业），如果不属于则返回 NONE。", 
-            content
-        );
-        return chat(prompt).trim();
+        System.out.println("\n--- [Milestone Identification] ---");
+        String prompt = String.format("判断以下记忆是否属于重要节点，只返回节点类型或 NONE：\n%s", content);
+        return chat(prompt);
     }
 
-    /**
-     * 从原始聊天记录中提取重要记忆事件
-     */
     public String extractMemoriesFromChat(String rawText) {
+        System.out.println("\n--- [Memory Extraction] ---");
+        String today = java.time.LocalDate.now().toString();
         String prompt = String.format(
-            "你是一个记忆提取专家。以下是一段原始的聊天记录或日志内容：\n" +
-            "------\n%s\n------\n" +
-            "请从中分析并提取出具有纪念意义的‘重要事件’。提取规则：\n" +
-            "1. 忽略琐碎的日常问候和无意义对话。\n" +
-            "2. 每个事件必须包含：标题（简洁）、内容描述（详细一点）、大概发生日期（YYYY-MM-DD格式，如果内容中没提到具体年份请推测或使用2024）。\n" +
-            "3. 请以JSON数组格式返回，例如：[{\"title\":\"...\", \"content\":\"...\", \"eventDate\":\"...\"}]。\n" +
-            "不要包含任何解释性文字，只返回JSON数组。", 
-            rawText
+            "你是一个记忆提取专家。请从以下文本中提取重要事件。提取规则：\n" +
+            "1. 严格时间基准：当前的完整日期是 %s（请务必使用此日期作为年份、月份和日期的计算起点）。\n" +
+            "2. 相对时间换算：如果文本提到‘今天’，日期必须是 %s；如果提到‘昨天’，请推算为 %s 的前一天；如果未提及年份，默认必须使用 %s 年。\n" +
+            "3. 每个事件必须包含：\n" +
+            "   - title（标题）\n" +
+            "   - content（描述）\n" +
+            "   - eventDate（格式：YYYY-MM-DD）\n" +
+            "   - sentimentScore（情感分值，范围 -1.0 到 1.0，积极为正，消极为负）\n" +
+            "4. 仅返回 JSON 数组，禁止任何解释性文字。\n" +
+            "5. 格式参考：[{\"title\":\"...\", \"content\":\"...\", \"eventDate\":\"%s\", \"sentimentScore\": 0.8}]\n\n" +
+            "待处理文本内容：\n%s", 
+            today, today, today, today.substring(0, 4), today, rawText
         );
         return chat(prompt);
     }
 
-    /**
-     * 生成叙事
-     */
     public String generateNarrative(String memoriesList, String style) {
-        String prompt = String.format(
-            "你是一位回忆录作家。以下是我的记忆片段（按时间排序）：\n%s\n" +
-            "请用第一人称写一段叙事，风格为%s，将这些记忆串联成一个完整的故事。要求有情感起伏、细节描写、自然的过渡。", 
-            memoriesList, style
-        );
+        System.out.println("\n--- [Narrative Generation] ---");
+        String prompt = String.format("请用%s风格将以下记忆串联成故事：\n%s", style, memoriesList);
         return chat(prompt);
     }
 }

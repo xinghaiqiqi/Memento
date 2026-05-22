@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:file:${DB_PATH:./data/memento_db};MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
+    url: jdbc:h2:file:${DB_PATH:./data/memento_db};MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;AUTO_SERVER=TRUE
     username: ${DB_USER:sa}
     password: ${DB_PASS:}
     driver-class-name: org.h2.Driver
@@ -22,6 +22,12 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: 0
+    timeout: 5000
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
@@ -40,7 +46,7 @@ mybatis-plus:
 ai:
   provider: deepseek
   deepseek:
-    api-key: ${DEEPSEEK_API_KEY:}
+    api-key: ${DEEPSEEK_API_KEY:sk-95211139baf243869260c72125e7c746}
     model: deepseek-chat
     api-url: https://api.deepseek.com/v1/chat/completions
   embedding:

@@ -1,0 +1,27 @@
+# Java
+memento-ai-backend/target/
+memento-ai-backend/*.iml
+memento-ai-backend/.idea/
+
+# Node
+memento-ai-frontend/node_modules/
+memento-ai-frontend/dist/
+memento-ai-frontend/*.log
+memento-ai-frontend/npm-debug.log*
+memento-ai-frontend/yarn-debug.log*
+memento-ai-frontend/yarn-error.log*
+
+# Database (Local data)
+data/
+uploads/
+exports/
+
+# IDEs
+.idea/
+*.swp
+*.swo
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

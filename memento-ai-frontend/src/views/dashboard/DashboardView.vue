@@ -93,29 +93,54 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import dayjs from 'dayjs'
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const userStore = useUserStore()
 const today = dayjs().format('YYYY / MM / DD')
 
 const stats = ref([
-  { label: '记忆结晶', value: '128', icon: 'Collection', trend: 12 },
-  { label: '重要锚点', value: '15', icon: 'Flag', trend: 5 },
-  { label: '编织叙事', value: '8', icon: 'Notebook', trend: 22 },
-  { label: '情感共鸣', value: '85%', icon: 'Connection', trend: -2 }
+  { label: '记忆结晶', value: '0', icon: 'Collection', trend: 0 },
+  { label: '重要锚点', value: '0', icon: 'Flag', trend: 0 },
+  { label: '编织叙事', value: '0', icon: 'Notebook', trend: 0 },
+  { label: '情感共鸣', value: '0%', icon: 'Connection', trend: 0 }
 ])
 
-const recentMemories = ref([
-  { eventDate: '2024.05.12', title: '西湖边的落日，在那一刻时间仿佛凝固', sentimentScore: 0.8 },
-  { eventDate: '2024.05.10', title: '深更半夜的代码调试，虽然疲惫但终于通透', sentimentScore: 0.5 },
-  { eventDate: '2024.05.08', title: '一场大雨淋湿了心情，却也洗净了街道', sentimentScore: -0.4 },
-  { eventDate: '2024.05.05', title: '老街里的咖啡香，和不期而喻的重逢', sentimentScore: 0.9 },
-  { eventDate: '2024.05.01', title: '山顶的晨曦，是给早起者最慷慨的奖励', sentimentScore: 0.7 }
-])
+const recentMemories = ref([])
+const loading = ref(false)
+
+const fetchDashboardData = async () => {
+  loading.value = true
+  try {
+    const [statsRes, recentRes] = await Promise.all([
+      axios.get('/api/dashboard/stats'),
+      axios.get('/api/dashboard/recent')
+    ])
+    
+    // 更新统计数据
+    stats.value[0].value = statsRes.data.totalMemories
+    stats.value[1].value = statsRes.data.totalMilestones
+    stats.value[2].value = statsRes.data.totalNarratives
+    stats.value[3].value = statsRes.data.resonance
+    
+    // 更新最近记忆
+    recentMemories.value = recentRes.data
+  } catch (error) {
+    console.error('获取首页数据失败:', error)
+    ElMessage.error('获取首页数据失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchDashboardData()
+})
 
 const getSentimentColor = (score) => {
   if (score > 0.3) return '#2cb67d'
@@ -138,111 +163,129 @@ const getSentimentLabel = (score) => {
 }
 
 .museum-plaque {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  padding: 40px;
+  background: rgba(15, 18, 24, 0.4);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 50px;
   text-align: center;
   position: relative;
   margin-bottom: 60px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(157, 80, 187, 0.05);
   
   &::before, &::after {
     content: '◈';
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--accent-primary);
-    font-size: 20px;
+    color: var(--accent-mystic);
+    font-size: 24px;
+    text-shadow: 0 0 15px rgba(157, 80, 187, 0.4);
   }
   &::before { left: 40px; }
   &::after { right: 40px; }
 
   .museum-name {
     font-family: var(--font-title);
-    font-size: 48px;
-    letter-spacing: 12px;
-    margin: 0 0 20px 0;
-    background: linear-gradient(to bottom, #fff, #94a1b2);
+    font-size: 56px;
+    letter-spacing: 16px;
+    margin: 0 0 25px 0;
+    background: var(--grad-mystic);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 10px rgba(157, 80, 187, 0.3));
   }
   
   .plaque-divider {
-    width: 200px;
+    width: 300px;
     height: 1px;
-    background: linear-gradient(to right, transparent, var(--accent-primary), transparent);
-    margin: 0 auto 20px;
+    background: linear-gradient(to right, transparent, var(--accent-mystic), transparent);
+    margin: 0 auto 25px;
+    opacity: 0.6;
   }
 
   .curator-info, .curator-date {
-    margin: 5px 0;
+    margin: 8px 0;
     font-family: var(--font-title);
-    letter-spacing: 2px;
-    font-size: 14px;
-    color: #94a1b2;
+    letter-spacing: 3px;
+    font-size: 15px;
+    color: #a0aec0;
   }
 }
 
 .exhibit-case {
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 30px;
-  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 35px;
+  border-radius: 24px;
   position: relative;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   
   &:hover {
-    transform: translateY(-10px);
-    background: rgba(255, 255, 255, 0.05);
-    border-color: var(--accent-primary);
-    .case-glow { opacity: 1; }
+    transform: translateY(-12px);
+    background: rgba(157, 80, 187, 0.05);
+    border-color: var(--accent-mystic);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    .case-glow { opacity: 0.6; }
+    .case-header .el-icon { transform: scale(1.2) rotate(10deg); }
   }
 
   .case-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    color: var(--accent-primary);
-    margin-bottom: 15px;
-    .label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #94a1b2; }
+    gap: 12px;
+    color: var(--accent-mystic);
+    margin-bottom: 20px;
+    .el-icon { font-size: 20px; transition: transform 0.4s; }
+    .label { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: #718096; font-weight: 600; }
   }
 
   .case-value {
-    font-size: 42px;
+    font-size: 48px;
     font-weight: 700;
     font-family: var(--font-title);
-    margin-bottom: 10px;
-  }
-
-  .case-footer {
-    .trend {
-      font-size: 12px;
-      &.up { color: var(--accent-secondary); }
-      &.down { color: var(--accent-tertiary); }
-    }
+    margin-bottom: 15px;
+    background: linear-gradient(to bottom, #fff, #cbd5e0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .case-glow {
     position: absolute;
     bottom: -50px; right: -50px;
     width: 150px; height: 150px;
-    background: radial-gradient(circle, rgba(127, 90, 240, 0.1) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.4s;
+    background: radial-gradient(circle, var(--accent-mystic), transparent 70%);
+    opacity: 0.2;
+    filter: blur(40px);
+    transition: opacity 0.5s;
+    pointer-events: none;
+  }
+}
+
+/* Cabinet & Monitor */
+.museum-curio-cabinet, .museum-status-monitor {
+  background: rgba(15, 18, 24, 0.3);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 32px;
+  padding: 35px;
+  height: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+  h3 {
+    font-family: var(--font-title);
+    font-size: 22px;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    background: linear-gradient(to right, #fff, #718096);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
 
 .curated-section {
   margin-top: 60px;
-}
-
-.museum-curio-cabinet, .museum-status-monitor {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 24px;
-  padding: 30px;
-  height: 100%;
 }
 
 .cabinet-header, .monitor-header {
@@ -320,10 +363,24 @@ const getSentimentLabel = (score) => {
   }
   
   .action-btn-gold {
-    background: var(--accent-primary);
+    background: var(--grad-mystic);
     border: none;
     color: #fff;
-    &:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(127, 90, 240, 0.4); }
+    font-weight: 700;
+    padding: 15px;
+    border-radius: 12px;
+    font-family: var(--font-title);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 10px 25px rgba(157, 80, 187, 0.3);
+    &:hover { 
+      transform: translateY(-3px) scale(1.02); 
+      box-shadow: 0 15px 35px rgba(157, 80, 187, 0.5); 
+    }
   }
   
   .action-btn-glass {
