@@ -9,6 +9,7 @@ import com.memento.mapper.MilestoneMapper;
 import com.memento.service.MemoryService;
 import com.memento.service.MilestoneService;
 import com.memento.util.AiUtils;
+import com.memento.util.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,7 +87,7 @@ public class MilestoneServiceImpl extends ServiceImpl<MilestoneMapper, Milestone
     @Transactional
     public MilestoneDTO addCustomMilestone(Milestone milestone) {
         if (milestone.getUserId() == null) {
-            milestone.setUserId(1L);
+            milestone.setUserId(SecurityUtils.getCurrentUserId());
         }
         milestone.setIsAuto(false);
         milestone.setCreatedAt(LocalDateTime.now());

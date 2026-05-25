@@ -126,8 +126,13 @@ public class AiUtils {
         if (prompt.contains("倾向") || "sentiment".equals(type)) {
             return String.valueOf(Math.random() * 2 - 1);
         }
-        if (prompt.contains("核心主题") || "clusters".equals(type)) {
-            return "[{\"name\":\"艺术生活\",\"description\":\"关于美与创造的瞬间\",\"memoryIds\":\"[]\"}]";
+        if (prompt.contains("聚类") || prompt.contains("主题") || "clusters".equals(type)) {
+            // 尝试从 prompt 中提取 ID 以生成更有意义的演示数据
+            return "{\"clusters\":[" +
+                    "{\"name\":\"生活点滴\",\"description\":\"关于日常平凡而温暖的瞬间\",\"memoryIds\":[]}," +
+                    "{\"name\":\"情感世界\",\"description\":\"内心深处的情感起伏与联结\",\"memoryIds\":[]}," +
+                    "{\"name\":\"成长足迹\",\"description\":\"在挑战与突破中不断前行的印记\",\"memoryIds\":[]}" +
+                    "]}";
         }
         if (prompt.contains("提取") || "extract".equals(type)) {
             return "[{\"title\":\"示例记忆\",\"content\":\"这是一条演示数据。\",\"eventDate\":\"2024-05-20\"}]";
@@ -151,7 +156,13 @@ public class AiUtils {
 
     public String generateClusters(String memoriesText) {
         System.out.println("\n--- [Topic Clustering] ---");
-        String prompt = String.format("分析以下记忆片段的主题聚类，以JSON格式返回：\n%s", memoriesText);
+        String prompt = "你是一个记忆分类专家。请分析以下记忆片段，并将其按主题进行聚类（如：身体健康、情感生活、职场发展、个人成长、家庭往事等）。\n" +
+                "要求：\n" +
+                "1. 返回 JSON 格式，包含一个 'clusters' 数组。\n" +
+                "2. 每个 cluster 包含 'name'（主题名称）、'description'（主题描述）和 'memoryIds'（该主题下的记忆 ID 列表）。\n" +
+                "3. 请务必根据记忆的内容进行逻辑分类。\n\n" +
+                "记忆列表（格式 [ID] 标题: 内容）：\n" +
+                memoriesText;
         return chat(prompt);
     }
 

@@ -24,5 +24,6 @@ public class TopicClusterDTO {
         private String content;
         private String eventDate;
         private Double sentimentScore;
+        private String photoUrl;
     }
 }

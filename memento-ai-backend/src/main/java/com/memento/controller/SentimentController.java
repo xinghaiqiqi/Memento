@@ -1,6 +1,7 @@
 package com.memento.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.memento.dto.Result;
 import com.memento.entity.Memory;
 import com.memento.service.MemoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/sentiment")
@@ -20,7 +22,7 @@ public class SentimentController {
     private MemoryService memoryService;
 
     @GetMapping("/statistics")
-    public Map<String, Object> getStatistics() {
+    public Result<Map<String, Object>> getStatistics() {
         Map<String, Object> stats = new HashMap<>();
         
         // 总体统计
@@ -36,13 +38,13 @@ public class SentimentController {
         stats.put("negativeCount", negative);
         stats.put("neutralCount", neutral);
         
-        return stats;
+        return Result.success(stats);
     }
 
     @GetMapping("/timeseries")
-    public List<Map<String, Object>> getTimeSeries() {
+    public Result<List<Map<String, Object>>> getTimeSeries() {
         // 简化：返回最近 10 条记忆的情感变化
-        return memoryService.list(new QueryWrapper<Memory>().orderByDesc("event_date").last("limit 10"))
+        List<Map<String, Object>> list = memoryService.list(new QueryWrapper<Memory>().orderByDesc("event_date").last("limit 10"))
                 .stream()
                 .map(m -> {
                     Map<String, Object> item = new HashMap<>();
@@ -50,6 +52,7 @@ public class SentimentController {
                     item.put("score", m.getSentimentScore());
                     return item;
                 })
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
+        return Result.success(list);
     }
 }

@@ -129,13 +129,14 @@ const fetchDashboardData = async () => {
     ])
     
     // 更新统计数据
-    stats.value[0].value = statsRes.data.totalMemories
-    stats.value[1].value = statsRes.data.totalMilestones
-    stats.value[2].value = statsRes.data.totalNarratives
-    stats.value[3].value = statsRes.data.resonance
+    const statsData = statsRes.data.data
+    stats.value[0].value = statsData.totalMemories
+    stats.value[1].value = statsData.totalMilestones
+    stats.value[2].value = statsData.totalNarratives
+    stats.value[3].value = statsData.resonance
     
     // 更新最近记忆
-    recentMemories.value = recentRes.data
+    recentMemories.value = recentRes.data.data
   } catch (error) {
     console.error('获取首页数据失败:', error)
     ElMessage.error('获取首页数据失败')

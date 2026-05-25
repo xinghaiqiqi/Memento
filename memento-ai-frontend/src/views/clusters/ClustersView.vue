@@ -1,12 +1,15 @@
 <template>
   <div class="clusters-container museum-fade-in">
     <div class="museum-header">
-      <h1 class="museum-title">记忆星云</h1>
-      <p class="museum-subtitle">漫步在记忆的星云中，探索灵魂的交织</p>
+      <h1 class="museum-title">记忆影像墙</h1>
+      <p class="museum-subtitle">漫步在时光长廊，重温那些被定格的瞬间</p>
       
       <div class="header-actions">
+        <button v-if="focusedCluster" class="ritual-button small secondary" @click="focusedCluster = null">
+          <span>返回银河</span>
+        </button>
         <button class="ritual-button small" @click="handleRunCluster" :disabled="clustering">
-          <span>{{ clustering ? '正在编织星云...' : '重新聚类' }}</span>
+          <span>{{ clustering ? '重构影像墙...' : '重新聚类' }}</span>
           <div class="button-glow"></div>
         </button>
       </div>
@@ -17,15 +20,17 @@
       <div id="nebula-canvas"></div>
       
       <!-- 悬浮提示 -->
-      <div v-if="hoveredNode" class="hover-card" :style="{ left: mouseX + 'px', top: mouseY + 'px' }">
-        <h4>{{ hoveredNode.name }}</h4>
-        <p>{{ hoveredNode.description }}</p>
-        <span class="hint">点击进入星团</span>
+      <div v-if="hoveredMemory" class="hover-card" :style="{ left: mouseX + 'px', top: mouseY + 'px' }">
+        <div class="cluster-tag" :style="{ color: hoveredMemory.clusterColor }">◈ {{ hoveredMemory.clusterName }}</div>
+        <h4>{{ hoveredMemory.title }}</h4>
+        <p class="date">{{ hoveredMemory.eventDate }}</p>
+        <p class="excerpt">{{ hoveredMemory.content.substring(0, 50) }}...</p>
+        <span class="hint">点击查阅详细记忆</span>
       </div>
 
       <!-- 交互提示 -->
       <div class="interaction-hint">
-        <p><el-icon><Pointer /></el-icon> 拖动旋转 / 滚轮缩放 / 点击星团探索</p>
+        <p><el-icon><Pointer /></el-icon> 拖动探索 / 滚轮缩放 / 点击照片进入深度回忆</p>
       </div>
     </div>
 
@@ -57,54 +62,70 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, reactive } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Pointer } from '@element-plus/icons-vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import axios from 'axios'
 
+// 1. 响应式状态定义
 const clustering = ref(false)
 const drawerVisible = ref(false)
 const selectedCluster = ref(null)
 const canvasContainer = ref(null)
-const hoveredNode = ref(null)
+const hoveredMemory = ref(null)
 const mouseX = ref(0)
 const mouseY = ref(0)
 
 const clusters = ref([])
 const allMemories = ref([])
 
-// 初始化数据
+// 2. Three.js 资源管理
+let scene, camera, renderer, controls, raycaster, mouse
+let galaxyGroup, starSystem
+let clusterGroups = []
+let photoMeshes = [] 
+let animationFrameId
+const textureLoader = new THREE.TextureLoader()
+
+// 聚焦状态
+const focusedCluster = ref(null)
+const isFocusing = ref(false)
+
+// 3. 数据加载逻辑
 const fetchData = async () => {
   try {
     const [clustersRes, memoriesRes] = await Promise.all([
       axios.get('/api/clusters'),
-      axios.get('/api/memories?size=100')
+      axios.get('/api/memories?size=200')
     ])
     
-    allMemories.value = memoriesRes.data.records || []
+    const clusterData = clustersRes.data.data || []
+    const memoryData = memoriesRes.data.records || memoriesRes.data.data?.records || []
     
-    if (clustersRes.data && clustersRes.data.length > 0) {
-      clusters.value = clustersRes.data.map((c, index) => {
-        const memoryIds = JSON.parse(c.memoryIds || '[]')
+    allMemories.value = memoryData
+    
+    if (clusterData.length > 0) {
+      clusters.value = clusterData.map((c, index) => {
+        const memoryIds = c.memoryIds || []
+        const filteredMemories = allMemories.value.filter(m => memoryIds.includes(m.id) && m.photoUrl)
+        
         const colors = ['#7f5af0', '#2cb67d', '#ef4565', '#3da9fc', '#ff8906']
         return {
           ...c,
           color: colors[index % colors.length],
-          memoryCount: memoryIds.length,
-          memories: allMemories.value.filter(m => memoryIds.includes(m.id))
+          memoryCount: filteredMemories.length,
+          memories: filteredMemories
         }
-      })
+      }).filter(c => c.memoryCount > 0)
     } else {
-      // 降级使用模拟数据
       useMockData()
     }
     
-    // 数据加载后重新构建星云
     if (scene) {
       clearScene()
-      createNebula()
+      createPhotoWall()
     }
   } catch (error) {
     console.error('Fetch data failed:', error)
@@ -116,37 +137,334 @@ const useMockData = () => {
   clusters.value = [
     { 
       id: 1, name: '旅行足迹', description: '记录了你前往不同城市的精彩瞬间。', 
-      memoryCount: 15, color: '#7f5af0',
-      memories: [{ id: 1, title: '西湖日落', eventDate: '2024-05-12', content: '美不胜收...' }]
-    },
-    { 
-      id: 2, name: '职场成长', description: '工作中的挑战与突破。', 
-      memoryCount: 10, color: '#2cb67d',
-      memories: []
-    },
-    { 
-      id: 3, name: '生活感悟', description: '平凡日子里的不平凡思考。', 
-      memoryCount: 20, color: '#ef4565',
-      memories: []
+      memoryCount: 1, color: '#7f5af0',
+      memories: [{ id: 1, title: '西湖日落', eventDate: '2024-05-12', content: '美不胜收...', photoUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb' }]
     }
   ]
 }
 
 const clearScene = () => {
-  while(scene.children.length > 0){ 
-    scene.remove(scene.children[0]) 
-  }
-  clusterPoints = []
+  if (!scene) return
+  if (galaxyGroup) scene.remove(galaxyGroup)
+  if (starSystem) scene.remove(starSystem)
+  clusterGroups = []
+  photoMeshes = []
+  focusedCluster.value = null
 }
 
-// Three.js 相关变量
-let scene, camera, renderer, controls, raycaster, mouse
-let stars = []
-let clusterPoints = []
-let animationFrameId
+// 4. Three.js 核心逻辑
+const initThree = () => {
+  if (!canvasContainer.value) return
+  
+  const width = canvasContainer.value.clientWidth
+  const height = canvasContainer.value.clientHeight
 
+  scene = new THREE.Scene()
+  camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000)
+  camera.position.set(0, 500, 1200)
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio)
+  
+  const canvasEl = document.getElementById('nebula-canvas')
+  if (canvasEl) canvasEl.appendChild(renderer.domElement)
+
+  controls = new OrbitControls(camera, renderer.domElement)
+  controls.enableDamping = true
+  controls.dampingFactor = 0.05
+  controls.maxDistance = 3000
+  controls.minDistance = 200
+
+  raycaster = new THREE.Raycaster()
+  mouse = new THREE.Vector2()
+
+  createPhotoWall()
+}
+
+const createClusterLabel = (name, color) => {
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  canvas.width = 512
+  canvas.height = 128
+  
+  ctx.fillStyle = 'rgba(0,0,0,0)'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+  
+  ctx.font = 'bold 60px "Noto Serif SC"'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  
+  // 绘制发光文字
+  ctx.shadowColor = color
+  ctx.shadowBlur = 20
+  ctx.fillStyle = '#ffffff'
+  ctx.fillText(name, 256, 64)
+  
+  const texture = new THREE.CanvasTexture(canvas)
+  const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true })
+  const sprite = new THREE.Sprite(spriteMaterial)
+  sprite.scale.set(300, 75, 1)
+  return sprite
+}
+
+const createPhotoWall = () => {
+  // 1. 背景星尘
+  const starGeometry = new THREE.BufferGeometry()
+  const starMaterial = new THREE.PointsMaterial({ color: 0x7f5af0, size: 2, transparent: true, opacity: 0.5 })
+  const starVertices = []
+  for (let i = 0; i < 4000; i++) {
+    starVertices.push((Math.random() - 0.5) * 6000, (Math.random() - 0.5) * 6000, (Math.random() - 0.5) * 6000)
+  }
+  starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3))
+  starSystem = new THREE.Points(starGeometry, starMaterial)
+  scene.add(starSystem)
+
+  // 2. 银河容器
+  galaxyGroup = new THREE.Group()
+  scene.add(galaxyGroup)
+
+  clusterGroups = []
+  photoMeshes = []
+  
+  const clusterRadius = 800 // 星团分布的大圆半径
+  
+  clusters.value.forEach((cluster, cIndex) => {
+    const clusterGroup = new THREE.Group()
+    
+    // 计算星团在银河中的位置 - 3D 错落分布
+    const angle = (cIndex / clusters.value.length) * Math.PI * 2
+    const x = Math.cos(angle) * clusterRadius
+    const z = Math.sin(angle) * clusterRadius
+    const y = (Math.random() - 0.5) * 600 // Y 轴大幅度错落
+    clusterGroup.position.set(x, y, z)
+    
+    // 给星团一个随机的初始倾斜角，更有动感
+    clusterGroup.rotation.x = (Math.random() - 0.5) * 0.3
+    clusterGroup.rotation.z = (Math.random() - 0.5) * 0.3
+    
+    // 星团中心标签
+    const label = createClusterLabel(cluster.name, cluster.color)
+    label.position.set(0, 0, 0)
+    clusterGroup.add(label)
+    
+    // 核心光晕
+    const coreGeo = new THREE.SphereGeometry(20, 32, 32)
+    const coreMat = new THREE.MeshBasicMaterial({ color: cluster.color, transparent: true, opacity: 0.3 })
+    const core = new THREE.Mesh(coreGeo, coreMat)
+    clusterGroup.add(core)
+
+    // 排列该星团内的照片
+    const photoMemories = cluster.memories
+    const photoCount = photoMemories.length
+    const innerRadius = 250 + (photoCount * 10) // 小圆半径随数量增加
+    
+    photoMemories.forEach((memory, pIndex) => {
+      const w = 100, h = 75
+      const photoGeo = new THREE.PlaneGeometry(w, h)
+      const texture = textureLoader.load(memory.photoUrl)
+      const photoMat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true, opacity: 0, depthWrite: true })
+      const mesh = new THREE.Mesh(photoGeo, photoMat)
+      
+      // 在星团内部做圆形分布
+      const pAngle = (pIndex / photoCount) * Math.PI * 2
+      const px = Math.cos(pAngle) * innerRadius
+      const pz = Math.sin(pAngle) * innerRadius
+      const py = (Math.random() - 0.5) * 200
+      
+      mesh.position.set(px, py, pz)
+      mesh.lookAt(0, py, 0) // 看向星团中心
+      
+      mesh.userData = {
+        memory: { ...memory, clusterName: cluster.name, clusterColor: cluster.color },
+        targetPos: mesh.position.clone(),
+        targetRot: mesh.rotation.clone(),
+        floatOffset: Math.random() * Math.PI * 2,
+        floatSpeed: 0.2 + Math.random() * 0.3,
+        entryProgress: 0,
+        clusterId: cluster.id,
+        parentGroup: clusterGroup
+      }
+      
+      clusterGroup.add(mesh)
+      photoMeshes.push(mesh)
+    })
+    
+    clusterGroup.userData = {
+      id: cluster.id,
+      originalPos: clusterGroup.position.clone(),
+      rotationSpeed: 0.005 + Math.random() * 0.005,
+      isFocused: false
+    }
+    
+    galaxyGroup.add(clusterGroup)
+    clusterGroups.push(clusterGroup)
+  })
+}
+
+const animate = () => {
+  animationFrameId = requestAnimationFrame(animate)
+  if (controls) controls.update()
+
+  const time = performance.now() * 0.001
+
+  // 1. 银河整体慢转
+  if (galaxyGroup && !focusedCluster.value) {
+    galaxyGroup.rotation.y += 0.0005
+  }
+
+  // 2. 星团逻辑
+  clusterGroups.forEach(group => {
+    const isThisFocused = focusedCluster.value === group.userData.id
+    
+    // 如果不是聚焦状态，或者不是被聚焦的星团，则自转
+    if (!isThisFocused) {
+      group.rotation.y += group.userData.rotationSpeed
+    }
+    
+    // 聚焦过渡逻辑
+    if (focusedCluster.value) {
+      if (isThisFocused) {
+        // 移向中心并放大
+        group.position.lerp(new THREE.Vector3(0, 0, 0), 0.1)
+        group.scale.lerp(new THREE.Vector3(1.5, 1.5, 1.5), 0.1)
+        // 聚焦时摆正姿态（消除 X 和 Z 轴的随机倾斜）
+        group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, 0, 0.1)
+        group.rotation.z = THREE.MathUtils.lerp(group.rotation.z, 0, 0.1)
+        // 缓慢转动展示
+        group.rotation.y += 0.002
+      } else {
+        // 其他星团淡出并缩小
+        group.scale.lerp(new THREE.Vector3(0.01, 0.01, 0.01), 0.1)
+      }
+    } else {
+      // 恢复原始 3D 错落位置
+      group.position.lerp(group.userData.originalPos, 0.05)
+      group.scale.lerp(new THREE.Vector3(1, 1, 1), 0.05)
+      // 恢复一定的倾斜动感
+      group.rotation.x = THREE.MathUtils.lerp(group.rotation.x, (group.userData.id % 2 === 0 ? 0.15 : -0.15), 0.05)
+    }
+  })
+
+  // 3. 影像个体动画
+  photoMeshes.forEach(mesh => {
+    const data = mesh.userData
+    const isParentFocused = focusedCluster.value === data.clusterId
+    
+    // 进场与透明度处理
+    if (data.entryProgress < 1) {
+      data.entryProgress += 0.02
+      mesh.material.opacity = data.entryProgress * 0.9
+    }
+
+    // 呼吸浮动
+    const f = Math.sin(time * data.floatSpeed + data.floatOffset) * 10
+    mesh.position.y = data.targetPos.y + f
+    
+    // 如果星团被聚焦，增加光亮
+    if (focusedCluster.value) {
+      mesh.material.opacity = THREE.MathUtils.lerp(mesh.material.opacity, isParentFocused ? 1.0 : 0, 0.1)
+    } else {
+      mesh.material.opacity = THREE.MathUtils.lerp(mesh.material.opacity, 0.9, 0.1)
+    }
+  })
+  
+  if (starSystem) {
+    starSystem.rotation.y += 0.0001
+  }
+
+  if (renderer && scene && camera) renderer.render(scene, camera)
+}
+
+// 5. 事件监听
+const onMouseMove = (event) => {
+  if (!canvasContainer.value || !mouse) return
+  const rect = canvasContainer.value.getBoundingClientRect()
+  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+  mouseX.value = event.clientX + 20
+  mouseY.value = event.clientY + 20
+}
+
+const onClick = () => {
+  if (!raycaster || !mouse || !camera || !galaxyGroup) return
+  
+  raycaster.setFromCamera(mouse, camera)
+  
+  // 检查是否点击了照片
+  const photoIntersects = raycaster.intersectObjects(photoMeshes)
+  
+  if (photoIntersects.length > 0) {
+    const clickedMesh = photoIntersects[0].object
+    const clusterId = clickedMesh.userData.clusterId
+    
+    if (focusedCluster.value === clusterId) {
+      // 已经聚焦，点击照片打开详情
+      selectedCluster.value = {
+        name: clickedMesh.userData.memory.clusterName,
+        description: '这段记忆属于主题：' + clickedMesh.userData.memory.clusterName,
+        memories: [clickedMesh.userData.memory]
+      }
+      drawerVisible.value = true
+    } else {
+      focusedCluster.value = clusterId
+    }
+    return
+  }
+  
+  // 检查是否点击了星团中心的标签或核心
+  const allClickable = []
+  clusterGroups.forEach(g => {
+    g.children.forEach(child => {
+      if (!(child instanceof THREE.Mesh && photoMeshes.includes(child))) {
+        allClickable.push(child)
+      }
+    })
+  })
+  
+  const labelIntersects = raycaster.intersectObjects(allClickable)
+  if (labelIntersects.length > 0) {
+    let target = labelIntersects[0].object
+    // 向上寻找包含 clusterId 的 parentGroup
+    while (target && !target.userData.id) {
+      target = target.parent
+    }
+    if (target && target.userData.id) {
+      focusedCluster.value = target.userData.id
+      return
+    }
+  }
+
+  // 点击空白处
+  focusedCluster.value = null
+}
+
+const handleResize = () => {
+  if (!canvasContainer.value || !camera || !renderer) return
+  const width = canvasContainer.value.clientWidth
+  const height = canvasContainer.value.clientHeight
+  camera.aspect = width / height
+  camera.updateProjectionMatrix()
+  renderer.setSize(width, height)
+}
+
+const handleRunCluster = async () => {
+  clustering.value = true
+  try {
+    await axios.post('/api/clusters/run')
+    ElMessage.success('影像墙重构完成')
+    await fetchData()
+  } catch (error) {
+    console.error('Clustering failed:', error)
+    ElMessage.error('重构失败，请检查 AI 配置')
+  } finally {
+    clustering.value = false
+  }
+}
+
+// 6. 生命周期
 onMounted(() => {
-  fetchData() // 加载真实数据
+  fetchData()
   initThree()
   animate()
   window.addEventListener('resize', handleResize)
@@ -164,178 +482,6 @@ onUnmounted(() => {
     renderer.domElement.remove()
   }
 })
-
-const initThree = () => {
-  const width = canvasContainer.value.clientWidth
-  const height = canvasContainer.value.clientHeight
-
-  scene = new THREE.Scene()
-  
-  camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 2000)
-  camera.position.z = 400
-
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-  renderer.setSize(width, height)
-  renderer.setPixelRatio(window.devicePixelRatio)
-  document.getElementById('nebula-canvas').appendChild(renderer.domElement)
-
-  controls = new OrbitControls(camera, renderer.domElement)
-  controls.enableDamping = true
-  controls.dampingFactor = 0.05
-  controls.autoRotate = true
-  controls.autoRotateSpeed = 0.5
-
-  raycaster = new THREE.Raycaster()
-  mouse = new THREE.Vector2()
-
-  createNebula()
-}
-
-const createNebula = () => {
-  // 1. 背景底噪星星
-  const starGeometry = new THREE.BufferGeometry()
-  const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, transparent: true, opacity: 0.5 })
-  const starVertices = []
-  for (let i = 0; i < 5000; i++) {
-    const x = (Math.random() - 0.5) * 2000
-    const y = (Math.random() - 0.5) * 2000
-    const z = (Math.random() - 0.5) * 2000
-    starVertices.push(x, y, z)
-  }
-  starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3))
-  const backgroundStars = new THREE.Points(starGeometry, starMaterial)
-  scene.add(backgroundStars)
-
-  // 2. 创建星团
-  clusters.value.forEach((cluster, index) => {
-    const group = new THREE.Group()
-    const color = new THREE.Color(cluster.color)
-    
-    // 中心核心大星
-    const coreGeo = new THREE.SphereGeometry(8, 32, 32)
-    const coreMat = new THREE.MeshBasicMaterial({ 
-      color: color, 
-      transparent: true, 
-      opacity: 0.8
-    })
-    const core = new THREE.Mesh(coreGeo, coreMat)
-    
-    // 发光光晕
-    const spriteMaterial = new THREE.SpriteMaterial({
-      map: createGlowTexture(cluster.color),
-      color: color,
-      transparent: true,
-      blending: THREE.AdditiveBlending
-    })
-    const sprite = new THREE.Sprite(spriteMaterial)
-    sprite.scale.set(40, 40, 1)
-    core.add(sprite)
-
-    // 随机分布记忆点星星
-    const pointsGeo = new THREE.BufferGeometry()
-    const pointsVertices = []
-    for (let i = 0; i < cluster.memoryCount * 5; i++) {
-      const r = 20 + Math.random() * 40
-      const theta = Math.random() * Math.PI * 2
-      const phi = Math.random() * Math.PI
-      pointsVertices.push(
-        r * Math.sin(phi) * Math.cos(theta),
-        r * Math.sin(phi) * Math.sin(theta),
-        r * Math.cos(phi)
-      )
-    }
-    pointsGeo.setAttribute('position', new THREE.Float32BufferAttribute(pointsVertices, 3))
-    const pointsMat = new THREE.PointsMaterial({ color: color, size: 2, transparent: true, opacity: 0.6 })
-    const cloud = new THREE.Points(pointsGeo, pointsMat)
-    
-    group.add(core)
-    group.add(cloud)
-
-    // 确定星团在空间中的位置
-    const angle = (index / clusters.value.length) * Math.PI * 2
-    const dist = 150
-    group.position.set(Math.cos(angle) * dist, Math.sin(angle) * dist, (Math.random() - 0.5) * 100)
-    
-    group.userData = { clusterData: cluster }
-    clusterPoints.push(core)
-    scene.add(group)
-  })
-}
-
-const createGlowTexture = (colorStr) => {
-  const canvas = document.createElement('canvas')
-  canvas.width = 64
-  canvas.height = 64
-  const ctx = canvas.getContext('2d')
-  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
-  gradient.addColorStop(0, 'rgba(255, 255, 255, 1)')
-  gradient.addColorStop(0.2, colorStr)
-  gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)')
-  ctx.fillStyle = gradient
-  ctx.fillRect(0, 0, 64, 64)
-  const texture = new THREE.CanvasTexture(canvas)
-  return texture
-}
-
-const animate = () => {
-  animationFrameId = requestAnimationFrame(animate)
-  controls.update()
-  
-  // 碰撞检测
-  raycaster.setFromCamera(mouse, camera)
-  const intersects = raycaster.intersectObjects(clusterPoints)
-  
-  if (intersects.length > 0) {
-    const obj = intersects[0].object
-    hoveredNode.value = obj.parent.userData.clusterData
-    document.body.style.cursor = 'pointer'
-    obj.scale.set(1.2, 1.2, 1.2)
-  } else {
-    hoveredNode.value = null
-    document.body.style.cursor = 'default'
-    clusterPoints.forEach(p => p.scale.set(1, 1, 1))
-  }
-
-  renderer.render(scene, camera)
-}
-
-const onMouseMove = (event) => {
-  const rect = canvasContainer.value.getBoundingClientRect()
-  mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-  mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-  mouseX.value = event.clientX + 20
-  mouseY.value = event.clientY + 20
-}
-
-const onClick = (event) => {
-  if (hoveredNode.value) {
-    selectedCluster.value = hoveredNode.value
-    drawerVisible.value = true
-  }
-}
-
-const handleResize = () => {
-  if (!canvasContainer.value) return
-  const width = canvasContainer.value.clientWidth
-  const height = canvasContainer.value.clientHeight
-  camera.aspect = width / height
-  camera.updateProjectionMatrix()
-  renderer.setSize(width, height)
-}
-
-const handleRunCluster = async () => {
-  clustering.value = true
-  try {
-    await axios.post('/api/clusters/run')
-    ElMessage.success('星云重构完成，发现了新的时空节点')
-    await fetchData() // 重新加载数据并更新 3D 场景
-  } catch (error) {
-    console.error('Clustering failed:', error)
-    ElMessage.error('星云重构失败，请检查 AI 配置')
-  } finally {
-    clustering.value = false
-  }
-}
 </script>
 
 <style lang="scss" scoped>
@@ -375,6 +521,15 @@ const handleRunCluster = async () => {
     justify-content: center;
     gap: 15px;
     margin-top: 25px;
+    
+    .secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.2);
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--accent-primary);
+      }
+    }
   }
 }
 
@@ -395,19 +550,55 @@ const handleRunCluster = async () => {
 
 .hover-card {
   position: fixed;
-  background: rgba(15, 18, 24, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--accent-primary);
-  border-radius: 12px;
-  padding: 15px;
-  width: 220px;
+  background: rgba(15, 18, 24, 0.95);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  width: 280px;
   pointer-events: none;
   z-index: 100;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
-  h4 { color: #fff; margin: 0 0 8px 0; font-family: var(--font-title); }
-  p { color: #94a1b2; font-size: 13px; margin: 0 0 10px 0; line-height: 1.5; }
-  .hint { color: var(--accent-primary); font-size: 11px; letter-spacing: 1px; }
+  .cluster-tag {
+    font-family: var(--font-title);
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  h4 { color: #fff; margin: 0 0 6px 0; font-family: var(--font-title); font-size: 18px; letter-spacing: 1px; }
+  
+  .date {
+    color: var(--accent-mystic);
+    font-size: 12px;
+    margin-bottom: 12px;
+    font-family: var(--font-title);
+    opacity: 0.8;
+  }
+
+  .excerpt { 
+    color: #a0aec0; 
+    font-size: 13px; 
+    margin-bottom: 15px; 
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .hint { 
+    display: block;
+    color: var(--accent-primary); 
+    font-size: 11px; 
+    letter-spacing: 1px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 10px;
+  }
 }
 
 .interaction-hint {

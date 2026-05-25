@@ -169,10 +169,14 @@ const startExtraction = async () => {
       formData.append('file', fileList.value[0].raw)
       res = await axios.post('/api/import/upload', formData)
     }
-    previewData.value = res.data
-    setTimeout(() => { activeStep.value = 2 }, 1500)
+    if (res.data.code === 200) {
+      previewData.value = res.data.data || []
+      setTimeout(() => { activeStep.value = 2 }, 1500)
+    } else {
+      throw new Error(res.data.message)
+    }
   } catch (error) {
-    ElMessage.error('萃取失败，请检查星象连接')
+    ElMessage.error(error.message || '萃取失败，请检查星象连接')
     activeStep.value = 0
   }
 }
@@ -180,11 +184,15 @@ const startExtraction = async () => {
 const handleConfirmImport = async () => {
   confirming.value = true
   try {
-    await axios.post('/api/import/confirm', previewData.value)
-    ElMessage.success('记忆已永恒留存')
-    router.push('/memories')
+    const res = await axios.post('/api/import/confirm', previewData.value)
+    if (res.data.code === 200 && res.data.data) {
+      ElMessage.success('记忆已永恒留存')
+      router.push('/memories')
+    } else {
+      throw new Error(res.data.message || '存入失败')
+    }
   } catch (error) {
-    ElMessage.error('存入失败')
+    ElMessage.error(error.message || '存入失败')
   } finally {
     confirming.value = false
   }

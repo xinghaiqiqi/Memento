@@ -1,5 +1,6 @@
 package com.memento.controller;
 
+import com.memento.dto.Result;
 import com.memento.entity.User;
 import com.memento.service.InitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,17 @@ public class InitController {
     private InitService initService;
 
     @GetMapping("/status")
-    public Map<String, Object> getStatus() {
+    public Result<Map<String, Object>> getStatus() {
         Map<String, Object> res = new HashMap<>();
         res.put("initialized", initService.isInitialized());
-        return res;
+        return Result.success(res);
     }
 
     @PostMapping("/setup")
-    public User setup(@RequestBody Map<String, String> params) {
+    public Result<User> setup(@RequestBody Map<String, String> params) {
         String nickname = params.get("nickname");
         String apiKey = params.get("apiKey");
-        return initService.setup(nickname, apiKey);
+        User user = initService.setup(nickname, apiKey);
+        return Result.success(user);
     }
 }

@@ -1,7 +1,9 @@
 package com.memento.controller;
 
+import com.memento.dto.Result;
 import com.memento.entity.ExportTask;
 import com.memento.mapper.ExportTaskMapper;
+import com.memento.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +18,9 @@ public class ExportController {
     private ExportTaskMapper exportTaskMapper;
 
     @PostMapping("/create")
-    public ExportTask create(@RequestBody Map<String, Object> params) {
+    public Result<ExportTask> create(@RequestBody Map<String, Object> params) {
         ExportTask task = new ExportTask();
-        task.setUserId(1L);
+        task.setUserId(SecurityUtils.getCurrentUserId());
         task.setStatus("pending");
         task.setCreatedAt(LocalDateTime.now());
         exportTaskMapper.insert(task);
@@ -29,11 +31,12 @@ public class ExportController {
         task.setCompletedAt(LocalDateTime.now());
         exportTaskMapper.updateById(task);
         
-        return task;
+        return Result.success(task);
     }
 
     @GetMapping("/status/{taskId}")
-    public ExportTask getStatus(@PathVariable Long taskId) {
-        return exportTaskMapper.selectById(taskId);
+    public Result<ExportTask> getStatus(@PathVariable Long taskId) {
+        ExportTask task = exportTaskMapper.selectById(taskId);
+        return task != null ? Result.success(task) : Result.error("任务不存在");
     }
 }

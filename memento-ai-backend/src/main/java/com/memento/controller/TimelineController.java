@@ -3,6 +3,7 @@ package com.memento.controller;
 import com.memento.dto.Result;
 import com.memento.dto.TimelineNodeDTO;
 import com.memento.service.TimelineService;
+import com.memento.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class TimelineController {
             @RequestParam(defaultValue = "day") String viewMode) {
         
         List<TimelineNodeDTO> nodes = timelineService.getTimeline(
-                1L, startDate, endDate, viewMode);
+                SecurityUtils.getCurrentUserId(), startDate, endDate, viewMode);
         
         return Result.success(nodes);
     }

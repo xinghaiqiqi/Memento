@@ -44,6 +44,8 @@
 // ... (keep script as is, but ensure imports and init logic are correct)
 import { ref, onMounted, onUnmounted } from 'vue'
 import * as echarts from 'echarts'
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 const lineChartRef = ref(null)
 const pieChartRef = ref(null)
@@ -53,10 +55,29 @@ let lineChart = null
 let pieChart = null
 let heatmap = null
 
+const fetchData = async () => {
+  try {
+    const [statsRes, timeseriesRes] = await Promise.all([
+      axios.get('/api/sentiment/statistics'),
+      axios.get('/api/sentiment/timeseries')
+    ])
+    
+    if (statsRes.data.code === 200) {
+      updatePieChart(statsRes.data.data)
+    }
+    
+    if (timeseriesRes.data.code === 200) {
+      updateLineChart(timeseriesRes.data.data)
+    }
+  } catch (error) {
+    console.error('获取情感数据失败:', error)
+    ElMessage.error('无法加载情感数据')
+  }
+}
+
 onMounted(() => {
-  initLineChart()
-  initPieChart()
-  initHeatmap()
+  initCharts()
+  fetchData()
   window.addEventListener('resize', handleResize)
 })
 
@@ -73,30 +94,56 @@ const handleResize = () => {
   heatmap?.resize()
 }
 
-const initLineChart = () => {
+const initCharts = () => {
   lineChart = echarts.init(lineChartRef.value, 'dark')
+  pieChart = echarts.init(pieChartRef.value, 'dark')
+  heatmap = echarts.init(heatmapRef.value, 'dark')
+  
+  // 初始化热力图（使用 mock 数据作为背景）
+  const heatmapData = []
+  for (let i = 0; i < 30; i++) {
+    heatmapData.push(['2024-05-' + (i + 1 < 10 ? '0' + (i + 1) : i + 1), Math.random() * 2 - 1])
+  }
+  
+  heatmap.setOption({
+    backgroundColor: 'transparent',
+    visualMap: {
+      min: -1, max: 1, calculable: true, orient: 'horizontal', left: 'center', top: 0,
+      inRange: { color: ['#ef4565', 'rgba(255,255,255,0.05)', '#2cb67d'] },
+      textStyle: { color: '#94a1b2' }
+    },
+    calendar: {
+      top: 80, left: 30, right: 30, cellSize: ['auto', 25], range: '2024-05',
+      itemStyle: { borderWidth: 2, borderColor: '#0b0e14', color: 'rgba(255,255,255,0.02)' },
+      yearLabel: { show: false },
+      dayLabel: { color: '#94a1b2', nameMap: 'cn' },
+      monthLabel: { color: '#94a1b2', nameMap: 'cn' }
+    },
+    series: { type: 'heatmap', coordinateSystem: 'calendar', data: heatmapData }
+  })
+}
+
+const updateLineChart = (data) => {
+  const dates = data.map(item => item.date.split('T')[0]).reverse()
+  const scores = data.map(item => item.score).reverse()
+  
   lineChart.setOption({
     backgroundColor: 'transparent',
     tooltip: { trigger: 'axis', backgroundColor: 'rgba(15, 18, 24, 0.9)', borderColor: 'rgba(127, 90, 240, 0.3)', textStyle: { color: '#fff' } },
     xAxis: {
       type: 'category',
-      data: ['5.1', '5.3', '5.5', '5.7', '5.9', '5.11', '5.13'],
+      data: dates,
       axisLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
       axisLabel: { color: '#94a1b2' }
     },
     yAxis: {
-      type: 'value',
-      min: -1,
-      max: 1,
+      type: 'value', min: -1, max: 1,
       splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
       axisLabel: { color: '#94a1b2' }
     },
     series: [{
-      data: [0.6, 0.2, -0.4, 0.5, 0.8, 0.1, 0.9],
-      type: 'line',
-      smooth: true,
-      symbol: 'circle',
-      symbolSize: 8,
+      data: scores,
+      type: 'line', smooth: true, symbol: 'circle', symbolSize: 8,
       itemStyle: { color: '#7f5af0' },
       areaStyle: {
         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
@@ -109,61 +156,20 @@ const initLineChart = () => {
   })
 }
 
-const initPieChart = () => {
-  pieChart = echarts.init(pieChartRef.value, 'dark')
+const updatePieChart = (stats) => {
   pieChart.setOption({
     backgroundColor: 'transparent',
     tooltip: { trigger: 'item', backgroundColor: 'rgba(15, 18, 24, 0.9)', borderColor: 'rgba(127, 90, 240, 0.3)', textStyle: { color: '#fff' } },
     series: [{
-      type: 'pie',
-      radius: ['55%', '75%'],
-      avoidLabelOverlap: false,
+      type: 'pie', radius: ['55%', '75%'], avoidLabelOverlap: false,
       itemStyle: { borderRadius: 12, borderColor: '#0b0e14', borderWidth: 3 },
       label: { show: false },
       data: [
-        { value: 45, name: '积极', itemStyle: { color: '#2cb67d' } },
-        { value: 30, name: '中性', itemStyle: { color: '#72757e' } },
-        { value: 25, name: '消极', itemStyle: { color: '#ef4565' } }
+        { value: stats.positiveCount, name: '积极', itemStyle: { color: '#2cb67d' } },
+        { value: stats.neutralCount, name: '中性', itemStyle: { color: '#72757e' } },
+        { value: stats.negativeCount, name: '消极', itemStyle: { color: '#ef4565' } }
       ]
     }]
-  })
-}
-
-const initHeatmap = () => {
-  heatmap = echarts.init(heatmapRef.value, 'dark')
-  const data = []
-  for (let i = 0; i < 30; i++) {
-    data.push(['2024-05-' + (i + 1 < 10 ? '0' + (i + 1) : i + 1), Math.random() * 2 - 1])
-  }
-  
-  heatmap.setOption({
-    backgroundColor: 'transparent',
-    visualMap: {
-      min: -1,
-      max: 1,
-      calculable: true,
-      orient: 'horizontal',
-      left: 'center',
-      top: 0,
-      inRange: { color: ['#ef4565', 'rgba(255,255,255,0.05)', '#2cb67d'] },
-      textStyle: { color: '#94a1b2' }
-    },
-    calendar: {
-      top: 80,
-      left: 30,
-      right: 30,
-      cellSize: ['auto', 25],
-      range: '2024-05',
-      itemStyle: { borderWidth: 2, borderColor: '#0b0e14', color: 'rgba(255,255,255,0.02)' },
-      yearLabel: { show: false },
-      dayLabel: { color: '#94a1b2', nameMap: 'cn' },
-      monthLabel: { color: '#94a1b2', nameMap: 'cn' }
-    },
-    series: {
-      type: 'heatmap',
-      coordinateSystem: 'calendar',
-      data: data
-    }
   })
 }
 </script>

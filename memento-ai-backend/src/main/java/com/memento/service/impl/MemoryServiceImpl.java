@@ -5,6 +5,7 @@ import com.memento.entity.Memory;
 import com.memento.mapper.MemoryMapper;
 import com.memento.service.MemoryService;
 import com.memento.util.AiUtils;
+import com.memento.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class MemoryServiceImpl extends ServiceImpl<MemoryMapper, Memory> impleme
     @Override
     public boolean saveMemory(Memory memory) {
         if (memory.getUserId() == null) {
-            memory.setUserId(1L); // 默认单用户
+            memory.setUserId(SecurityUtils.getCurrentUserId()); // 默认从上下文获取
         }
         boolean saved = save(memory);
         if (saved) {

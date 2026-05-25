@@ -13,6 +13,7 @@ public class GeneratedNarrative {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long userId;
+    private String type;
     private String title;
     private String content;
     private String conditionJson;

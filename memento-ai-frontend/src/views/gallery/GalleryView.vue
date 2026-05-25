@@ -109,8 +109,10 @@ const fetchMemories = async () => {
 }
 
 const filteredMemories = computed(() => {
-  if (sentimentFilter.value === 'all') return memories.value
-  return memories.value.filter(item => {
+  let list = memories.value.filter(m => !!m.photoUrl) // 强制只显示有照片的记忆
+  
+  if (sentimentFilter.value === 'all') return list
+  return list.filter(item => {
     if (!item.sentimentScore) return true
     if (sentimentFilter.value === 'positive') return item.sentimentScore > 0.3
     if (sentimentFilter.value === 'negative') return item.sentimentScore < -0.3
@@ -266,6 +268,7 @@ onMounted(() => {
       line-height: 1.7;
       display: -webkit-box;
       -webkit-line-clamp: 4;
+      line-clamp: 4;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }

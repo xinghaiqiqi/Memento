@@ -4,6 +4,7 @@ import com.memento.dto.MilestoneDTO;
 import com.memento.dto.Result;
 import com.memento.entity.Milestone;
 import com.memento.service.MilestoneService;
+import com.memento.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,7 @@ public class MilestoneController {
 
     @GetMapping
     public Result<List<MilestoneDTO>> list() {
-        List<MilestoneDTO> milestones = milestoneService.getAllMilestones(1L);
-        return Result.success(milestones);
+        return Result.success(milestoneService.getAllMilestones(SecurityUtils.getCurrentUserId()));
     }
 
     @GetMapping("/{id}")
@@ -30,12 +30,7 @@ public class MilestoneController {
 
     @PostMapping("/identify")
     public Result<List<MilestoneDTO>> identify() {
-        try {
-            List<MilestoneDTO> milestones = milestoneService.identifyMilestones(1L);
-            return Result.success("识别完成，发现 " + milestones.size() + " 个新节点", milestones);
-        } catch (Exception e) {
-            return Result.error(e.getMessage());
-        }
+        return Result.success(milestoneService.identifyMilestones(SecurityUtils.getCurrentUserId()));
     }
 
     @PostMapping

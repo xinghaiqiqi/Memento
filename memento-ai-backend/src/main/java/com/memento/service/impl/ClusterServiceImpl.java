@@ -64,6 +64,7 @@ public class ClusterServiceImpl extends ServiceImpl<TopicClusterMapper, TopicClu
                 summary.setContent(m.getContent());
                 summary.setEventDate(m.getEventDate().toString());
                 summary.setSentimentScore(m.getSentimentScore() != null ? m.getSentimentScore().doubleValue() : 0.0);
+                summary.setPhotoUrl(m.getPhotoUrl()); // 添加照片 URL
                 return summary;
             }).collect(Collectors.toList()));
             
@@ -75,7 +76,7 @@ public class ClusterServiceImpl extends ServiceImpl<TopicClusterMapper, TopicClu
 
     @Override
     @Transactional
-    public TopicClusterDTO runClustering(Long userId) {
+    public List<TopicClusterDTO> runClustering(Long userId) {
         List<Memory> memories = memoryService.list(new LambdaQueryWrapper<Memory>()
                 .eq(Memory::getUserId, userId)
                 .eq(Memory::getIsDeleted, false)
@@ -87,13 +88,16 @@ public class ClusterServiceImpl extends ServiceImpl<TopicClusterMapper, TopicClu
         }
         
         String text = memories.stream()
-                .map(m -> m.getTitle() + ": " + m.getContent())
+                .map(m -> "[" + m.getId() + "] " + m.getTitle() + ": " + m.getContent())
                 .collect(Collectors.joining("\n"));
         
         String aiResult = aiUtils.generateClusters(text);
         
         JSONObject result = JSON.parseObject(aiResult);
         JSONArray clusters = result.getJSONArray("clusters");
+        
+        // 只有在成功获取并解析 AI 结果后，才清理旧的聚类数据
+        remove(new LambdaQueryWrapper<TopicCluster>().eq(TopicCluster::getUserId, userId));
         
         List<TopicCluster> newClusters = new ArrayList<>();
         
@@ -117,7 +121,7 @@ public class ClusterServiceImpl extends ServiceImpl<TopicClusterMapper, TopicClu
         
         saveBatch(newClusters);
         
-        return convertToDTO(newClusters.get(0));
+        return newClusters.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override

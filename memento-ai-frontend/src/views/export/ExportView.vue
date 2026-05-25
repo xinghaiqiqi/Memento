@@ -40,16 +40,16 @@
 
               <el-form-item label="包含内容">
                 <el-checkbox-group v-model="exportConfig.includes">
-                  <el-checkbox label="memories">原始记忆</el-checkbox>
-                  <el-checkbox label="narratives">AI 叙事</el-checkbox>
-                  <el-checkbox label="charts">统计图表</el-checkbox>
+                  <el-checkbox value="memories">原始记忆</el-checkbox>
+                  <el-checkbox value="narratives">AI 叙事</el-checkbox>
+                  <el-checkbox value="charts">统计图表</el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
 
               <el-form-item label="排版风格">
                 <el-radio-group v-model="exportConfig.layout">
-                  <el-radio label="classic">经典书信</el-radio>
-                  <el-radio label="modern">现代简约</el-radio>
+                  <el-radio value="classic">经典书信</el-radio>
+                  <el-radio value="modern">现代简约</el-radio>
                 </el-radio-group>
               </el-form-item>
 
@@ -85,6 +85,8 @@ import { ref, reactive } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
 
+import axios from 'axios'
+
 const userStore = useUserStore()
 const exporting = ref(false)
 
@@ -96,12 +98,24 @@ const exportConfig = reactive({
   layout: 'classic'
 })
 
-const handleExport = () => {
+const handleExport = async () => {
   exporting.value = true
-  setTimeout(() => {
+  try {
+    const res = await axios.post('/api/export/create', exportConfig)
+    if (res.data.code === 200) {
+      ElMessage.success('导出任务已提交，完成后将自动下载')
+      // 模拟下载过程
+      setTimeout(() => {
+        window.open(res.data.data.filePath, '_blank')
+      }, 2000)
+    } else {
+      throw new Error(res.data.message)
+    }
+  } catch (error) {
+    ElMessage.error(error.message || '导出失败')
+  } finally {
     exporting.value = false
-    ElMessage.success('导出任务已提交，完成后将自动下载')
-  }, 2000)
+  }
 }
 </script>
 

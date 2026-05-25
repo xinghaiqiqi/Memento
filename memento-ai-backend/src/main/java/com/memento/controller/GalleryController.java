@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.memento.dto.GalleryCardDTO;
 import com.memento.dto.Result;
 import com.memento.service.GalleryService;
+import com.memento.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class GalleryController {
             @RequestParam(required = false) Long topicId) {
         
         Page<GalleryCardDTO> page = galleryService.getGalleryCards(
-                1L, current, size, startDate, endDate, sentimentType, topicId);
+                SecurityUtils.getCurrentUserId(), current, size, startDate, endDate, sentimentType, topicId);
         
         return Result.success(page);
     }

@@ -3,6 +3,7 @@ package com.memento.controller;
 import com.memento.dto.Result;
 import com.memento.dto.TopicClusterDTO;
 import com.memento.service.ClusterService;
+import com.memento.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +18,7 @@ public class ClusterController {
 
     @GetMapping
     public Result<List<TopicClusterDTO>> list() {
-        List<TopicClusterDTO> clusters = clusterService.getAllClusters(1L);
-        return Result.success(clusters);
+        return Result.success(clusterService.getAllClusters(SecurityUtils.getCurrentUserId()));
     }
 
     @GetMapping("/{id}")
@@ -34,13 +34,8 @@ public class ClusterController {
     }
 
     @PostMapping("/run")
-    public Result<TopicClusterDTO> runClustering() {
-        try {
-            TopicClusterDTO cluster = clusterService.runClustering(1L);
-            return Result.success("聚类完成", cluster);
-        } catch (Exception e) {
-            return Result.error(e.getMessage());
-        }
+    public Result<List<TopicClusterDTO>> run() {
+        return Result.success(clusterService.runClustering(SecurityUtils.getCurrentUserId()));
     }
 
     @PutMapping("/{id}/rename")

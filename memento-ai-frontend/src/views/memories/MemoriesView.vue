@@ -262,8 +262,9 @@ const fetchMemories = async () => {
         endDate: dateRange.value?.[1]
       }
     })
-    memories.value = res.data.records || []
-    total.value = res.data.total || 0
+    const pageData = res.data.data
+    memories.value = pageData.records || []
+    total.value = pageData.total || 0
   } catch (error) {
     ElMessage.error('无法连接至陈列馆')
   } finally {

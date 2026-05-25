@@ -1,9 +1,11 @@
 package com.memento.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.memento.dto.Result;
 import com.memento.entity.Memory;
 import com.memento.service.MemoryService;
 import com.memento.util.AiUtils;
+import com.memento.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -29,16 +31,16 @@ public class ImportController {
     private StringRedisTemplate redisTemplate;
 
     @PostMapping("/upload")
-    public List<Memory> upload(@RequestParam("file") MultipartFile file) throws Exception {
+    public Result<List<Memory>> upload(@RequestParam("file") MultipartFile file) throws Exception {
         String content = new String(file.getBytes(), StandardCharsets.UTF_8);
-        return extract(content);
+        return Result.success(extract(content));
     }
 
     @PostMapping("/text")
-    public List<Memory> importText(@RequestBody Map<String, String> body) {
+    public Result<List<Memory>> importText(@RequestBody Map<String, String> body) {
         String text = body.get("text");
         if (text == null || text.isEmpty()) {
-            return List.of();
+            return Result.success(List.of());
         }
         System.out.println("\n>>> [Controller] Received text import request. Content: " + (text.length() > 20 ? text.substring(0, 20) + "..." : text));
         String jsonResult = aiUtils.extractMemoriesFromChat(text);
@@ -47,10 +49,10 @@ public class ImportController {
         try {
             List<Memory> memories = JSON.parseArray(jsonResult, Memory.class);
             System.out.println(">>> [Controller] Successfully parsed " + memories.size() + " memories.");
-            return memories;
+            return Result.success(memories);
         } catch (Exception e) {
             System.err.println("!!! [Controller] Failed to parse AI result to Memory list: " + e.getMessage());
-            return List.of();
+            return Result.error("AI 提取失败: " + e.getMessage());
         }
     }
 
@@ -71,11 +73,13 @@ public class ImportController {
     }
 
     @PostMapping("/confirm")
-    public boolean confirm(@RequestBody List<Memory> memories) {
+    public Result<Boolean> confirm(@RequestBody List<Memory> memories) {
+        int countInserted = 0;
+        Long currentUserId = SecurityUtils.getCurrentUserId();
         for (Memory m : memories) {
             // 生成记忆内容的唯一标识 (基于内容和用户 ID)
             String contentHash = cn.hutool.crypto.digest.DigestUtil.md5Hex(m.getContent().trim());
-            String duplicateKey = "memory:dup:" + (m.getUserId() != null ? m.getUserId() : 1) + ":" + contentHash;
+            String duplicateKey = "memory:dup:" + (m.getUserId() != null ? m.getUserId() : currentUserId) + ":" + contentHash;
 
             // 检查 Redis 中是否存在该记忆
             if (Boolean.TRUE.equals(redisTemplate.hasKey(duplicateKey))) {
@@ -94,10 +98,11 @@ public class ImportController {
 
             // 保存记忆
             memoryService.saveMemory(m);
+            countInserted++;
 
             // 记录到 Redis，防止 1 小时内频繁重复点击
             redisTemplate.opsForValue().set(duplicateKey, "1", 1, TimeUnit.HOURS);
         }
-        return true;
+        return Result.success(countInserted > 0);
     }
 }
