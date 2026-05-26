@@ -29,46 +29,72 @@ public class NarrativeController {
     @Autowired
     private AiUtils aiUtils;
 
-    @GetMapping
-    public Result<List<GeneratedNarrative>> list() {
-        Long userId = SecurityUtils.getCurrentUserId();
-        List<GeneratedNarrative> list = narrativeMapper.selectList(new LambdaQueryWrapper<GeneratedNarrative>()
-                .eq(GeneratedNarrative::getUserId, userId)
-                .orderByDesc(GeneratedNarrative::getCreatedAt));
-        return Result.success(list);
+    @GetMapping("/list")
+    public Result<List<GeneratedNarrative>> list(@RequestParam(required = false) String keyword) {
+        try {
+            Long userId = SecurityUtils.getCurrentUserId();
+            LambdaQueryWrapper<GeneratedNarrative> query = new LambdaQueryWrapper<>();
+            query.eq(GeneratedNarrative::getUserId, userId);
+            if (keyword != null && !keyword.isEmpty()) {
+                query.like(GeneratedNarrative::getTitle, keyword).or().like(GeneratedNarrative::getContent, keyword);
+            }
+            query.orderByDesc(GeneratedNarrative::getCreatedAt);
+            List<GeneratedNarrative> list = narrativeMapper.selectList(query);
+            return Result.success(list);
+        } catch (Exception e) {
+            System.err.println(">>> [Narrative] Failed to list narratives: " + e.getMessage());
+            // 如果表结构未更新，返回空列表而不是报错
+            return Result.success(new java.util.ArrayList<>());
+        }
     }
 
     @PostMapping("/generate")
     public Result<GeneratedNarrative> generate(@RequestBody Map<String, Object> params) {
         Long userId = SecurityUtils.getCurrentUserId();
-        String type = (String) params.getOrDefault("type", "weekly");
+        String style = (String) params.getOrDefault("style", "prose");
+        List<String> dateRange = (List<String>) params.get("dateRange");
         
-        // 获取最近的记忆
-        List<Memory> memories = memoryService.list(new LambdaQueryWrapper<Memory>()
+        LambdaQueryWrapper<Memory> query = new LambdaQueryWrapper<Memory>()
                 .eq(Memory::getUserId, userId)
-                .eq(Memory::getIsDeleted, false)
-                .orderByDesc(Memory::getEventDate)
-                .last("limit 10"));
+                .eq(Memory::getIsDeleted, false);
+        
+        if (dateRange != null && dateRange.size() == 2) {
+            query.ge(Memory::getEventDate, dateRange.get(0))
+                 .le(Memory::getEventDate, dateRange.get(1));
+        }
+        
+        query.orderByDesc(Memory::getEventDate).last("limit 20");
+        
+        // 获取匹配时间段的记忆
+        List<Memory> memories = memoryService.list(query);
         
         if (memories.isEmpty()) {
-            return Result.error("没有足够的记忆来生成叙事");
+            return Result.error("所选时间段内没有足够的记忆来编织故事");
         }
 
         String memoryText = memories.stream()
-                .map(m -> m.getTitle() + ": " + m.getContent())
+                .map(m -> (m.getTitle() != null ? m.getTitle() : "无标题") + ": " + (m.getContent() != null ? m.getContent() : "无内容"))
                 .collect(Collectors.joining("\n"));
         
-        String content = aiUtils.generateNarrative(memoryText, type);
-        
-        GeneratedNarrative narrative = new GeneratedNarrative();
-        narrative.setUserId(userId);
-        narrative.setType(type);
-        narrative.setContent(content);
-        narrative.setTitle(type.equals("weekly") ? "周度情感回响" : "记忆深度解析");
-        narrative.setCreatedAt(LocalDateTime.now());
-        
-        narrativeMapper.insert(narrative);
-        return Result.success(narrative);
+        try {
+            String content = aiUtils.generateNarrative(memoryText, style);
+            if (content == null || content.isEmpty()) {
+                return Result.error("AI 编织引擎返回了空卷轴，请稍后重试");
+            }
+            
+            GeneratedNarrative narrative = new GeneratedNarrative();
+            narrative.setUserId(userId);
+            narrative.setType(style);
+            narrative.setContent(content);
+            narrative.setTitle("记忆篇章：" + (memories.get(0).getEventDate() != null ? memories.get(0).getEventDate().toString() : "未知日期"));
+            narrative.setCreatedAt(LocalDateTime.now());
+            narrative.setWordCount(content.length());
+            
+            return Result.success(narrative);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("编织仪式意外中断：" + e.getMessage());
+        }
     }
 
     @PostMapping("/save")

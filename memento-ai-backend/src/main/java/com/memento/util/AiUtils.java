@@ -36,13 +36,18 @@ public class AiUtils {
      * 调用大模型对话接口
      */
     public String chat(String prompt) {
-        // 清理 prompt，去除首尾空格并统一换行符，提高缓存命中率
+        // 清理 prompt，提高缓存命中率
         String cleanPrompt = prompt.trim().replace("\r\n", "\n");
         String cacheKey = "ai:cache:" + cn.hutool.crypto.digest.DigestUtil.md5Hex(cleanPrompt);
-        String cachedValue = redisTemplate.opsForValue().get(cacheKey);
-        if (cachedValue != null) {
-            System.out.println(">>> [Redis] Cache Hit for AI Request.");
-            return cachedValue;
+        
+        try {
+            String cachedValue = redisTemplate.opsForValue().get(cacheKey);
+            if (cachedValue != null) {
+                System.out.println(">>> [Redis] Cache Hit for AI Request.");
+                return cachedValue;
+            }
+        } catch (Exception e) {
+            System.err.println(">>> [Redis] Cache access failed: " + e.getMessage());
         }
 
         System.out.println("\n--- [DeepSeek API Request] ---");
@@ -88,6 +93,10 @@ public class AiUtils {
                     JSONObject errorObj = jsonResponse.getJSONObject("error");
                     String errorMsg = errorObj != null ? errorObj.getString("message") : "Unknown Error";
                     System.err.println("!!! [DeepSeek API Error]: " + errorMsg);
+                    
+                    if (errorMsg.contains("Insufficient Balance")) {
+                        return "【系统提示：API 余额不足】\n您的 DeepSeek 账户余额已耗尽，请及时充值。目前系统已切换至演示模式为您生成内容：\n\n" + getDemoResponse(cleanPrompt, "unknown");
+                    }
                     return getDemoResponse(cleanPrompt, "unknown");
                 }
 
@@ -100,8 +109,12 @@ public class AiUtils {
                 System.out.println("Processed Content: " + processed);
 
                 // 写入缓存 (有效期 24 小时)
-                redisTemplate.opsForValue().set(cacheKey, processed, 24, TimeUnit.HOURS);
-                System.out.println(">>> [Redis] Cache Saved for prompt.");
+                try {
+                    redisTemplate.opsForValue().set(cacheKey, processed, 24, TimeUnit.HOURS);
+                    System.out.println(">>> [Redis] Cache Saved for prompt.");
+                } catch (Exception e) {
+                    System.err.println(">>> [Redis] Cache save failed: " + e.getMessage());
+                }
                 
                 return processed;
             }

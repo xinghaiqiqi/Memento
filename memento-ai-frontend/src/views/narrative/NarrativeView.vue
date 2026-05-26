@@ -236,7 +236,7 @@ const searchKeyword = ref('')
 const fetchSavedNarratives = async () => {
   loadingList.value = true
   try {
-    const res = await axios.get('/api/narrative/list', {
+    const res = await axios.get('/api/narratives/list', {
       params: { keyword: searchKeyword.value }
     })
     if (res.data.code === 200) {
@@ -263,9 +263,11 @@ const startGeneration = async () => {
   
   isGenerating.value = true
   try {
-    const res = await axios.post('/api/narrative/generate', {
+    const res = await axios.post('/api/narratives/generate', {
       dateRange: config.dateRange,
       style: config.style
+    }, {
+      timeout: 60000 // 增加超时时间至 60 秒
     })
     
     if (res.data.code === 200) {
@@ -281,7 +283,8 @@ const startGeneration = async () => {
     }
   } catch (error) {
     console.error('Narrative generation failed:', error)
-    ElMessage.error('编织仪式中断，请检查星象连接')
+    const errorMsg = error.response?.data?.message || '编织仪式中断，请检查星象连接'
+    ElMessage.error(errorMsg)
   } finally {
     isGenerating.value = false
   }
@@ -290,7 +293,7 @@ const startGeneration = async () => {
 const handleSave = async () => {
   isSaving.value = true
   try {
-    const res = await axios.post('/api/narrative/save', {
+    const res = await axios.post('/api/narratives/save', {
       id: narrativeResult.id || null,
       title: narrativeResult.title,
       content: narrativeResult.rawContent,
@@ -335,7 +338,7 @@ const handleDelete = (id) => {
     customClass: 'museum-message-box'
   }).then(async () => {
     try {
-      const res = await axios.delete(`/api/narrative/${id}`)
+      const res = await axios.delete(`/api/narratives/${id}`)
       if (res.data.code === 200) {
         ElMessage.success('叙事已归于虚无')
         fetchSavedNarratives()

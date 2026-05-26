@@ -5,6 +5,10 @@
       <p class="museum-subtitle">漫步在时光长廊，重温那些被定格的瞬间</p>
       
       <div class="header-actions">
+        <button class="ritual-button small sensor-toggle" :class="{ active: sensorEnabled }" @click="toggleSensor">
+          <span>{{ sensorEnabled ? '关闭手势传感器' : '开启手势控制' }}</span>
+          <div class="button-glow"></div>
+        </button>
         <button v-if="focusedCluster" class="ritual-button small secondary" @click="focusedCluster = null">
           <span>返回银河</span>
         </button>
@@ -18,6 +22,13 @@
     <!-- 3D 容器 -->
     <div class="nebula-canvas-wrapper" ref="canvasContainer">
       <div id="nebula-canvas"></div>
+      
+      <!-- 手势控制监视器 -->
+      <div v-show="sensorEnabled" class="sensor-monitor">
+        <video ref="videoElement" class="input_video" autoplay muted playsinline style="display:none"></video>
+        <canvas ref="canvasElement" class="output_canvas" width="240" height="180"></canvas>
+        <div class="sensor-status">手势传感器已启动</div>
+      </div>
       
       <!-- 悬浮提示 -->
       <div v-if="hoveredMemory" class="hover-card" :style="{ left: mouseX + 'px', top: mouseY + 'px' }">
@@ -68,6 +79,9 @@ import { Pointer } from '@element-plus/icons-vue'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import axios from 'axios'
+import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands'
+import { Camera } from '@mediapipe/camera_utils'
+import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
 
 // 1. 响应式状态定义
 const clustering = ref(false)
@@ -78,10 +92,14 @@ const hoveredMemory = ref(null)
 const mouseX = ref(0)
 const mouseY = ref(0)
 
+const sensorEnabled = ref(false)
+const videoElement = ref(null)
+const canvasElement = ref(null)
+
 const clusters = ref([])
 const allMemories = ref([])
 
-// 2. Three.js 资源管理
+// 2. Three.js & MediaPipe 资源管理
 let scene, camera, renderer, controls, raycaster, mouse
 let galaxyGroup, starSystem
 let clusterGroups = []
@@ -89,9 +107,150 @@ let photoMeshes = []
 let animationFrameId
 const textureLoader = new THREE.TextureLoader()
 
+let hands, mpCamera
+let lastHandPos = null
+let lastPinchDist = null
+
 // 聚焦状态
 const focusedCluster = ref(null)
 const isFocusing = ref(false)
+
+// --- 手势识别核心逻辑 ---
+const initHands = () => {
+  hands = new Hands({
+    locateFile: (file) => {
+      return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    }
+  })
+
+  hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5,
+    selfieMode: true
+  })
+
+  hands.onResults(onResults)
+
+  if (videoElement.value) {
+    mpCamera = new Camera(videoElement.value, {
+      onFrame: async () => {
+        if (sensorEnabled.value) {
+          await hands.send({ image: videoElement.value })
+        }
+      },
+      width: 640,
+      height: 480
+    })
+  }
+}
+
+const onResults = (results) => {
+  if (!canvasElement.value || !sensorEnabled.value) return
+  
+  const canvasCtx = canvasElement.value.getContext('2d')
+  if (!canvasCtx) return
+
+  canvasCtx.save()
+  
+  // 清除画布
+  canvasCtx.clearRect(0, 0, canvasElement.value.width, canvasElement.value.height)
+  
+  // 1. 绘制摄像头画面
+  // 优先使用 results.image，如果不存在则尝试直接使用 videoElement
+  if (results.image) {
+    canvasCtx.drawImage(results.image, 0, 0, canvasElement.value.width, canvasElement.value.height)
+  } else if (videoElement.value) {
+    canvasCtx.drawImage(videoElement.value, 0, 0, canvasElement.value.width, canvasElement.value.height)
+  }
+  
+  if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+    const landmarks = results.multiHandLandmarks[0]
+    
+    // 2. 绘制手势辅助线
+    drawConnectors(canvasCtx, landmarks, HAND_CONNECTIONS, { color: '#7f5af0', lineWidth: 2 })
+    drawLandmarks(canvasCtx, landmarks, { color: '#ffffff', lineWidth: 1, radius: 2 })
+
+    // 1. 旋转交互 (手掌中心移动)
+    const palmBase = landmarks[0]
+    if (lastHandPos) {
+      const dx = palmBase.x - lastHandPos.x
+      const dy = palmBase.y - lastHandPos.y
+      
+      if (controls && !focusedCluster.value) {
+        // 水平旋转
+        galaxyGroup.rotation.y += dx * 5
+        // 俯仰视角
+        camera.position.y += dy * 1000
+        camera.lookAt(0, 0, 0)
+      }
+    }
+    lastHandPos = { x: palmBase.x, y: palmBase.y }
+
+    // 2. 缩放交互 (拇指与食指捏合)
+    const thumbTip = landmarks[4]
+    const indexTip = landmarks[8]
+    const dist = Math.sqrt(
+      Math.pow(thumbTip.x - indexTip.x, 2) + 
+      Math.pow(thumbTip.y - indexTip.y, 2)
+    )
+    
+    if (lastPinchDist !== null) {
+      const delta = dist - lastPinchDist
+      if (Math.abs(delta) > 0.005) {
+        camera.position.z -= delta * 5000
+        camera.position.z = Math.max(200, Math.min(3000, camera.position.z))
+      }
+    }
+    lastPinchDist = dist
+
+    // 3. 指针交互 (食指尖端)
+    const pointerX = (1 - indexTip.x) * window.innerWidth
+    const pointerY = indexTip.y * window.innerHeight
+    
+    // 模拟鼠标坐标给 Raycaster
+    mouse.x = (indexTip.x * -2) + 1 // 镜像处理
+    mouse.y = (indexTip.y * -2) + 1
+    
+    mouseX.value = pointerX
+    mouseY.value = pointerY
+    
+    // 自动点击判定 (快速捏合)
+    if (dist < 0.03 && !isFocusing.value) {
+      isFocusing.value = true
+      onClick()
+      setTimeout(() => { isFocusing.value = false }, 1000)
+    }
+  } else {
+    lastHandPos = null
+    lastPinchDist = null
+  }
+  canvasCtx.restore()
+}
+
+const toggleSensor = async () => {
+  if (!sensorEnabled.value) {
+    try {
+      sensorEnabled.value = true // 先设为 true，确保 onFrame 中的 hands.send 能执行
+      if (!hands) {
+        initHands()
+        console.log('>>> [Sensor] Hands initialized')
+      }
+      await mpCamera.start()
+      console.log('>>> [Sensor] Camera started')
+      ElMessage.success('手势传感器已启动')
+    } catch (err) {
+      sensorEnabled.value = false
+      console.error('>>> [Sensor] Failed to start:', err)
+      ElMessage.error('无法启动摄像头: ' + err.message)
+    }
+  } else {
+    sensorEnabled.value = false
+    if (mpCamera) await mpCamera.stop()
+    ElMessage.info('手势传感器已关闭')
+  }
+}
 
 // 3. 数据加载逻辑
 const fetchData = async () => {
@@ -474,6 +633,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   cancelAnimationFrame(animationFrameId)
+  if (mpCamera) mpCamera.stop()
+  if (hands) hands.close()
   window.removeEventListener('resize', handleResize)
   window.removeEventListener('mousemove', onMouseMove)
   window.removeEventListener('click', onClick)
@@ -522,6 +683,16 @@ onUnmounted(() => {
     gap: 15px;
     margin-top: 25px;
     
+    .sensor-toggle {
+      background: rgba(127, 90, 240, 0.1);
+      border-color: rgba(127, 90, 240, 0.3);
+      &.active {
+        background: rgba(127, 90, 240, 0.3);
+        border-color: #7f5af0;
+        box-shadow: 0 0 15px rgba(127, 90, 240, 0.4);
+      }
+    }
+
     .secondary {
       background: rgba(255, 255, 255, 0.05);
       border-color: rgba(255, 255, 255, 0.2);
@@ -671,5 +842,42 @@ onUnmounted(() => {
   &:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 0 20px rgba(127, 90, 240, 0.4); }
   &.small { padding: 10px 25px; font-size: 13px; }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.sensor-monitor {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 240px;
+  height: 180px;
+  background: rgba(11, 14, 20, 0.8);
+  border: 1px solid rgba(127, 90, 240, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+
+  .output_canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); // 镜像显示
+  }
+
+  .sensor-status {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    background: rgba(127, 90, 240, 0.8);
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
 }
 </style>

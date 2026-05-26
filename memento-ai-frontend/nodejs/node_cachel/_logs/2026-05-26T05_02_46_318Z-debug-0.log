@@ -1,0 +1,263 @@
+0 verbose cli D:\nodejs\node.exe D:\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@11.11.0
+2 info using node@v24.14.1
+3 silly config load:file:D:\nodejs\node_modules\npm\npmrc
+4 silly config load:file:D:\github\Memento\memento-ai-frontend\.npmrc
+5 silly config load:file:C:\Users\DELL\.npmrc
+6 silly config load:file:D:\github\Memento\memento-ai-frontend\nodejs\node_global\etc\npmrc
+7 verbose title npm install @mediapipe/hands @mediapipe/camera_utils @mediapipe/drawing_utils
+8 verbose argv "install" "@mediapipe/hands" "@mediapipe/camera_utils" "@mediapipe/drawing_utils"
+9 verbose logfile logs-max:10 dir:D:\github\Memento\memento-ai-frontend\nodejs\node_cachel\_logs\2026-05-26T05_02_46_318Z-
+10 verbose logfile D:\github\Memento\memento-ai-frontend\nodejs\node_cachel\_logs\2026-05-26T05_02_46_318Z-debug-0.log
+11 silly logfile start cleaning logs, removing 1 files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 silly fetch manifest @mediapipe/hands@*
+15 silly packumentCache full:https://registry.npmjs.org/@mediapipe%2fhands cache-miss
+16 silly logfile done cleaning log files
+17 http fetch GET 200 https://registry.npmjs.org/@mediapipe%2fhands 1528ms (cache miss)
+18 silly packumentCache full:https://registry.npmjs.org/@mediapipe%2fhands set size:undefined disposed:false
+19 silly fetch manifest @mediapipe/camera_utils@*
+20 silly packumentCache full:https://registry.npmjs.org/@mediapipe%2fcamera_utils cache-miss
+21 http fetch GET 200 https://registry.npmjs.org/@mediapipe%2fcamera_utils 458ms (cache miss)
+22 silly packumentCache full:https://registry.npmjs.org/@mediapipe%2fcamera_utils set size:undefined disposed:false
+23 silly fetch manifest @mediapipe/drawing_utils@*
+24 silly packumentCache full:https://registry.npmjs.org/@mediapipe%2fdrawing_utils cache-miss
+25 http fetch GET 200 https://registry.npmjs.org/@mediapipe%2fdrawing_utils 578ms (cache miss)
+26 silly packumentCache full:https://registry.npmjs.org/@mediapipe%2fdrawing_utils set size:undefined disposed:false
+27 silly placeDep ROOT @mediapipe/camera_utils@0.3.1675466862 OK for: memento-ai-frontend@0.0.0 want: *
+28 silly placeDep ROOT @mediapipe/drawing_utils@0.3.1675466124 OK for: memento-ai-frontend@0.0.0 want: *
+29 silly placeDep ROOT @mediapipe/hands@0.4.1675469240 OK for: memento-ai-frontend@0.0.0 want: *
+30 silly reify moves {}
+31 silly audit bulk request {
+31 silly audit   '@babel/helper-string-parser': [ '7.27.1' ],
+31 silly audit   '@babel/helper-validator-identifier': [ '7.28.5' ],
+31 silly audit   '@babel/parser': [ '7.29.3' ],
+31 silly audit   '@babel/runtime': [ '7.29.2' ],
+31 silly audit   '@babel/types': [ '7.29.0' ],
+31 silly audit   '@ctrl/tinycolor': [ '4.2.0' ],
+31 silly audit   '@element-plus/icons-vue': [ '2.3.2' ],
+31 silly audit   '@esbuild/android-arm': [ '0.18.20' ],
+31 silly audit   '@esbuild/android-arm64': [ '0.18.20' ],
+31 silly audit   '@esbuild/android-x64': [ '0.18.20' ],
+31 silly audit   '@esbuild/darwin-arm64': [ '0.18.20' ],
+31 silly audit   '@esbuild/darwin-x64': [ '0.18.20' ],
+31 silly audit   '@esbuild/freebsd-arm64': [ '0.18.20' ],
+31 silly audit   '@esbuild/freebsd-x64': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-arm': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-arm64': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-ia32': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-loong64': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-mips64el': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-ppc64': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-riscv64': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-s390x': [ '0.18.20' ],
+31 silly audit   '@esbuild/linux-x64': [ '0.18.20' ],
+31 silly audit   '@esbuild/netbsd-x64': [ '0.18.20' ],
+31 silly audit   '@esbuild/openbsd-x64': [ '0.18.20' ],
+31 silly audit   '@esbuild/sunos-x64': [ '0.18.20' ],
+31 silly audit   '@esbuild/win32-arm64': [ '0.18.20' ],
+31 silly audit   '@esbuild/win32-ia32': [ '0.18.20' ],
+31 silly audit   '@esbuild/win32-x64': [ '0.18.20' ],
+31 silly audit   '@floating-ui/core': [ '1.7.5' ],
+31 silly audit   '@floating-ui/dom': [ '1.7.6' ],
+31 silly audit   '@floating-ui/utils': [ '0.2.11' ],
+31 silly audit   '@jridgewell/sourcemap-codec': [ '1.5.5' ],
+31 silly audit   '@parcel/watcher': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-android-arm64': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-darwin-arm64': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-darwin-x64': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-freebsd-x64': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-linux-arm-glibc': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-linux-arm-musl': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-linux-arm64-glibc': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-linux-arm64-musl': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-linux-x64-glibc': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-linux-x64-musl': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-win32-arm64': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-win32-ia32': [ '2.5.6' ],
+31 silly audit   '@parcel/watcher-win32-x64': [ '2.5.6' ],
+31 silly audit   '@sxzz/popperjs-es': [ '2.11.8' ],
+31 silly audit   '@types/lodash': [ '4.17.24' ],
+31 silly audit   '@types/lodash-es': [ '4.17.12' ],
+31 silly audit   '@types/pako': [ '2.0.4' ],
+31 silly audit   '@types/raf': [ '3.4.3' ],
+31 silly audit   '@types/trusted-types': [ '2.0.7' ],
+31 silly audit   '@types/web-bluetooth': [ '0.0.21' ],
+31 silly audit   '@vitejs/plugin-vue': [ '4.6.2' ],
+31 silly audit   '@vue/compiler-core': [ '3.5.34' ],
+31 silly audit   '@vue/compiler-dom': [ '3.5.34' ],
+31 silly audit   '@vue/compiler-sfc': [ '3.5.34' ],
+31 silly audit   '@vue/compiler-ssr': [ '3.5.34' ],
+31 silly audit   '@vue/devtools-api': [ '6.6.4' ],
+31 silly audit   '@vue/reactivity': [ '3.5.34' ],
+31 silly audit   '@vue/runtime-core': [ '3.5.34' ],
+31 silly audit   '@vue/runtime-dom': [ '3.5.34' ],
+31 silly audit   '@vue/server-renderer': [ '3.5.34' ],
+31 silly audit   '@vue/shared': [ '3.5.34' ],
+31 silly audit   '@vueuse/core': [ '14.3.0' ],
+31 silly audit   '@vueuse/metadata': [ '14.3.0' ],
+31 silly audit   '@vueuse/shared': [ '14.3.0' ],
+31 silly audit   'async-validator': [ '4.2.5' ],
+31 silly audit   asynckit: [ '0.4.0' ],
+31 silly audit   axios: [ '1.16.0' ],
+31 silly audit   'base64-arraybuffer': [ '1.0.2' ],
+31 silly audit   'call-bind-apply-helpers': [ '1.0.2' ],
+31 silly audit   canvg: [ '3.0.11' ],
+31 silly audit   chokidar: [ '4.0.3' ],
+31 silly audit   'combined-stream': [ '1.0.8' ],
+31 silly audit   'core-js': [ '3.49.0' ],
+31 silly audit   'css-line-break': [ '2.1.0' ],
+31 silly audit   csstype: [ '3.2.3' ],
+31 silly audit   dayjs: [ '1.11.20' ],
+31 silly audit   'delayed-stream': [ '1.0.0' ],
+31 silly audit   'detect-libc': [ '2.1.2' ],
+31 silly audit   dompurify: [ '3.4.5' ],
+31 silly audit   'dunder-proto': [ '1.0.1' ],
+31 silly audit   echarts: [ '5.6.0' ],
+31 silly audit   'element-plus': [ '2.14.0' ],
+31 silly audit   entities: [ '7.0.1' ],
+31 silly audit   'es-define-property': [ '1.0.1' ],
+31 silly audit   'es-errors': [ '1.3.0' ],
+31 silly audit   'es-object-atoms': [ '1.1.1' ],
+31 silly audit   'es-set-tostringtag': [ '2.1.0' ],
+31 silly audit   esbuild: [ '0.18.20' ],
+31 silly audit   'estree-walker': [ '2.0.2' ],
+31 silly audit   'fast-png': [ '6.4.0' ],
+31 silly audit   fflate: [ '0.8.3' ],
+31 silly audit   'follow-redirects': [ '1.16.0' ],
+31 silly audit   'form-data': [ '4.0.5' ],
+31 silly audit   fsevents: [ '2.3.3' ],
+31 silly audit   'function-bind': [ '1.1.2' ],
+31 silly audit   'get-intrinsic': [ '1.3.0' ],
+31 silly audit   'get-proto': [ '1.0.1' ],
+31 silly audit   gopd: [ '1.2.0' ],
+31 silly audit   'has-symbols': [ '1.1.0' ],
+31 silly audit   'has-tostringtag': [ '1.0.2' ],
+31 silly audit   hasown: [ '2.0.3' ],
+31 silly audit   html2canvas: [ '1.4.1' ],
+31 silly audit   immutable: [ '5.1.5' ],
+31 silly audit   iobuffer: [ '5.4.0' ],
+31 silly audit   'is-extglob': [ '2.1.1' ],
+31 silly audit   'is-glob': [ '4.0.3' ],
+31 silly audit   jspdf: [ '4.2.1' ],
+31 silly audit   lodash: [ '4.18.1' ],
+31 silly audit   'lodash-es': [ '4.18.1' ],
+31 silly audit   'lodash-unified': [ '1.0.3' ],
+31 silly audit   'magic-string': [ '0.30.21' ],
+31 silly audit   'math-intrinsics': [ '1.1.0' ],
+31 silly audit   'memoize-one': [ '6.0.0' ],
+31 silly audit   'mime-db': [ '1.52.0' ],
+31 silly audit   'mime-types': [ '2.1.35' ],
+31 silly audit   nanoid: [ '3.3.12' ],
+31 silly audit   'node-addon-api': [ '7.1.1' ],
+31 silly audit   'normalize-wheel-es': [ '1.2.0' ],
+31 silly audit   pako: [ '2.1.0' ],
+31 silly audit   'performance-now': [ '2.1.0' ],
+31 silly audit   picocolors: [ '1.1.1' ],
+31 silly audit   picomatch: [ '4.0.4' ],
+31 silly audit   pinia: [ '2.3.1' ],
+31 silly audit   postcss: [ '8.5.14' ],
+31 silly audit   'proxy-from-env': [ '2.1.0' ],
+31 silly audit   raf: [ '3.4.1' ],
+31 silly audit   readdirp: [ '4.1.2' ],
+31 silly audit   'regenerator-runtime': [ '0.13.11' ],
+31 silly audit   rgbcolor: [ '1.0.1' ],
+31 silly audit   rollup: [ '3.30.0' ],
+31 silly audit   sass: [ '1.99.0' ],
+31 silly audit   'source-map-js': [ '1.2.1' ],
+31 silly audit   'stackblur-canvas': [ '2.7.0' ],
+31 silly audit   'svg-pathdata': [ '6.0.3' ],
+31 silly audit   'text-segmentation': [ '1.0.3' ],
+31 silly audit   three: [ '0.184.0' ],
+31 silly audit   tslib: [ '2.3.0' ],
+31 silly audit   utrie: [ '1.0.2' ],
+31 silly audit   vite: [ '4.5.14' ],
+31 silly audit   vue: [ '3.5.34' ],
+31 silly audit   'vue-component-type-helpers': [ '3.2.8' ],
+31 silly audit   'vue-demi': [ '0.14.10' ],
+31 silly audit   'vue-router': [ '4.6.4' ],
+31 silly audit   zrender: [ '5.6.1' ],
+31 silly audit   '@mediapipe/camera_utils': [ '0.3.1675466862' ],
+31 silly audit   '@mediapipe/drawing_utils': [ '0.3.1675466124' ],
+31 silly audit   '@mediapipe/hands': [ '0.4.1675469240' ]
+31 silly audit }
+32 http cache @mediapipe/hands@https://registry.npmjs.org/@mediapipe/hands/-/hands-0.4.1675469240.tgz 0ms (cache hit)
+33 http cache @mediapipe/camera_utils@https://registry.npmjs.org/@mediapipe/camera_utils/-/camera_utils-0.3.1675466862.tgz 0ms (cache hit)
+34 http cache @mediapipe/drawing_utils@https://registry.npmjs.org/@mediapipe/drawing_utils/-/drawing_utils-0.3.1675466124.tgz 0ms (cache hit)
+35 silly tarball no local data for @mediapipe/hands@https://registry.npmjs.org/@mediapipe/hands/-/hands-0.4.1675469240.tgz. Extracting by manifest.
+36 silly tarball no local data for @mediapipe/camera_utils@https://registry.npmjs.org/@mediapipe/camera_utils/-/camera_utils-0.3.1675466862.tgz. Extracting by manifest.
+37 silly tarball no local data for @mediapipe/drawing_utils@https://registry.npmjs.org/@mediapipe/drawing_utils/-/drawing_utils-0.3.1675466124.tgz. Extracting by manifest.
+38 http fetch POST 200 https://registry.npmjs.org/-/npm/v1/security/advisories/bulk 289ms
+39 silly audit report {
+39 silly audit report   esbuild: [
+39 silly audit report     {
+39 silly audit report       id: 1102341,
+39 silly audit report       url: 'https://github.com/advisories/GHSA-67mh-4wv8-2f99',
+39 silly audit report       title: 'esbuild enables any website to send any requests to the development server and read the response',
+39 silly audit report       severity: 'moderate',
+39 silly audit report       vulnerable_versions: '<=0.24.2',
+39 silly audit report       cwe: [Array],
+39 silly audit report       cvss: [Object]
+39 silly audit report     }
+39 silly audit report   ],
+39 silly audit report   vite: [
+39 silly audit report     {
+39 silly audit report       id: 1107323,
+39 silly audit report       url: 'https://github.com/advisories/GHSA-g4jq-h2w9-997c',
+39 silly audit report       title: 'Vite middleware may serve files starting with the same name with the public directory',
+39 silly audit report       severity: 'low',
+39 silly audit report       vulnerable_versions: '<=5.4.19',
+39 silly audit report       cwe: [Array],
+39 silly audit report       cvss: [Object]
+39 silly audit report     },
+39 silly audit report     {
+39 silly audit report       id: 1107327,
+39 silly audit report       url: 'https://github.com/advisories/GHSA-jqfw-vq24-v9c3',
+39 silly audit report       title: "Vite's `server.fs` settings were not applied to HTML files",
+39 silly audit report       severity: 'low',
+39 silly audit report       vulnerable_versions: '<=5.4.19',
+39 silly audit report       cwe: [Array],
+39 silly audit report       cvss: [Object]
+39 silly audit report     },
+39 silly audit report     {
+39 silly audit report       id: 1109132,
+39 silly audit report       url: 'https://github.com/advisories/GHSA-93m4-6634-74q7',
+39 silly audit report       title: 'vite allows server.fs.deny bypass via backslash on Windows',
+39 silly audit report       severity: 'moderate',
+39 silly audit report       vulnerable_versions: '>=4.5.3 <5.0.0',
+39 silly audit report       cwe: [Array],
+39 silly audit report       cvss: [Object]
+39 silly audit report     },
+39 silly audit report     {
+39 silly audit report       id: 1116229,
+39 silly audit report       url: 'https://github.com/advisories/GHSA-4w7w-66w2-5vf9',
+39 silly audit report       title: 'Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling',
+39 silly audit report       severity: 'moderate',
+39 silly audit report       vulnerable_versions: '<=6.4.1',
+39 silly audit report       cwe: [Array],
+39 silly audit report       cvss: [Object]
+39 silly audit report     }
+39 silly audit report   ]
+39 silly audit report }
+40 silly packumentCache corgi:https://registry.npmjs.org/esbuild cache-miss
+41 silly packumentCache corgi:https://registry.npmjs.org/vite cache-miss
+42 http fetch GET 200 https://registry.npmjs.org/esbuild 271ms (cache revalidated)
+43 silly packumentCache corgi:https://registry.npmjs.org/esbuild set size:885757 disposed:false
+44 http fetch GET 200 https://registry.npmjs.org/@mediapipe/drawing_utils/-/drawing_utils-0.3.1675466124.tgz 1290ms (cache miss)
+45 http fetch GET 200 https://registry.npmjs.org/@mediapipe/camera_utils/-/camera_utils-0.3.1675466862.tgz 2272ms (cache miss)
+46 http fetch GET 200 https://registry.npmjs.org/@mediapipe/hands/-/hands-0.4.1675469240.tgz 4136ms (cache miss)
+47 http fetch GET 200 https://registry.npmjs.org/vite 12021ms (cache revalidated)
+48 silly packumentCache corgi:https://registry.npmjs.org/vite set size:2249718 disposed:false
+49 silly packumentCache corgi:https://registry.npmjs.org/@vitejs%2fplugin-vue cache-miss
+50 http fetch GET 200 https://registry.npmjs.org/@vitejs%2fplugin-vue 364ms (cache revalidated)
+51 silly packumentCache corgi:https://registry.npmjs.org/@vitejs%2fplugin-vue set size:173841 disposed:false
+52 silly ADD node_modules/@mediapipe/hands
+53 silly ADD node_modules/@mediapipe/drawing_utils
+54 silly ADD node_modules/@mediapipe/camera_utils
+55 verbose cwd D:\github\Memento\memento-ai-frontend
+56 verbose os Windows_NT 10.0.26200
+57 verbose node v24.14.1
+58 verbose npm  v11.11.0
+59 verbose exit 0
+60 info ok

@@ -60,6 +60,7 @@ CREATE INDEX IF NOT EXISTS idx_ms_user_date ON milestones(user_id, event_date);
 CREATE TABLE IF NOT EXISTS generated_narratives (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
+    type VARCHAR(50),
     title VARCHAR(200) NOT NULL,
     content TEXT NOT NULL,
     condition_json TEXT,
@@ -67,6 +68,9 @@ CREATE TABLE IF NOT EXISTS generated_narratives (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_gn_user_created ON generated_narratives(user_id, created_at);
+
+-- 确保旧数据表包含 type 字段
+ALTER TABLE generated_narratives ADD COLUMN IF NOT EXISTS type VARCHAR(50);
 
 -- 表6：import_logs（导入日志表）
 CREATE TABLE IF NOT EXISTS import_logs (

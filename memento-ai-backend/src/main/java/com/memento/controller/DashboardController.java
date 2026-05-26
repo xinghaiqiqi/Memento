@@ -34,35 +34,52 @@ public class DashboardController {
     @GetMapping("/stats")
     public Result<Map<String, Object>> getStats() {
         Long userId = SecurityUtils.getCurrentUserId();
-        
-        long totalMemories = memoryService.count(new LambdaQueryWrapper<Memory>().eq(Memory::getUserId, userId));
-        long totalMilestones = milestoneMapper.selectCount(new LambdaQueryWrapper<Milestone>().eq(Milestone::getUserId, userId));
-        long totalNarratives = narrativeMapper.selectCount(new LambdaQueryWrapper<GeneratedNarrative>().eq(GeneratedNarrative::getUserId, userId));
-        
-        // 计算情感共鸣度 (积极情感占比)
-        long positiveMemories = memoryService.count(new LambdaQueryWrapper<Memory>()
-                .eq(Memory::getUserId, userId)
-                .gt(Memory::getSentimentScore, 0.3));
-        
-        long totalForResonance = totalMemories + totalMilestones + totalNarratives;
-        String resonance = totalForResonance == 0 ? "0%" : (positiveMemories * 100 / totalForResonance) + "%";
-
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalMemories", totalMemories);
-        stats.put("totalMilestones", totalMilestones);
-        stats.put("totalNarratives", totalNarratives);
-        stats.put("resonance", resonance);
         
-        return Result.success(stats);
+        try {
+            long totalMemories = memoryService.count(new LambdaQueryWrapper<Memory>().eq(Memory::getUserId, userId));
+            long totalMilestones = milestoneMapper.selectCount(new LambdaQueryWrapper<Milestone>().eq(Milestone::getUserId, userId));
+            
+            // 统计叙事生成，增加异常捕获以应对数据库字段未更新的情况
+            long totalNarratives = 0;
+            try {
+                totalNarratives = narrativeMapper.selectCount(new LambdaQueryWrapper<GeneratedNarrative>().eq(GeneratedNarrative::getUserId, userId));
+            } catch (Exception e) {
+                System.err.println(">>> [Dashboard] Failed to count narratives: " + e.getMessage());
+            }
+            
+            // 计算情感共鸣度 (积极情感占比)
+            long positiveMemories = memoryService.count(new LambdaQueryWrapper<Memory>()
+                    .eq(Memory::getUserId, userId)
+                    .gt(Memory::getSentimentScore, 0.3));
+            
+            long totalForResonance = totalMemories + totalMilestones + totalNarratives;
+            String resonance = totalForResonance == 0 ? "0%" : (positiveMemories * 100 / totalForResonance) + "%";
+
+            stats.put("totalMemories", totalMemories);
+            stats.put("totalMilestones", totalMilestones);
+            stats.put("totalNarratives", totalNarratives);
+            stats.put("resonance", resonance);
+            
+            return Result.success(stats);
+        } catch (Exception e) {
+            System.err.println(">>> [Dashboard] Failed to get stats: " + e.getMessage());
+            return Result.error("获取统计数据失败，请检查数据库状态");
+        }
     }
 
     @GetMapping("/recent")
     public Result<List<Memory>> getRecentMemories() {
-        Long userId = SecurityUtils.getCurrentUserId();
-        List<Memory> list = memoryService.list(new LambdaQueryWrapper<Memory>()
-                .eq(Memory::getUserId, userId)
-                .orderByDesc(Memory::getEventDate)
-                .last("limit 5"));
-        return Result.success(list);
+        try {
+            Long userId = SecurityUtils.getCurrentUserId();
+            List<Memory> list = memoryService.list(new LambdaQueryWrapper<Memory>()
+                    .eq(Memory::getUserId, userId)
+                    .orderByDesc(Memory::getEventDate)
+                    .last("limit 5"));
+            return Result.success(list);
+        } catch (Exception e) {
+            System.err.println(">>> [Dashboard] Failed to get recent memories: " + e.getMessage());
+            return Result.error("获取近期记忆失败，请确保数据库已更新");
+        }
     }
 }
