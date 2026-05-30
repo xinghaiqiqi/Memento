@@ -1,0 +1,72 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:h2:file:${DB_PATH:./data/memento_db};MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;AUTO_SERVER=TRUE
+    username: ${DB_USER:sa}
+    password: ${DB_PASS:}
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: false
+  sql:
+    init:
+      schema-locations: classpath:db/schema.sql
+      mode: always
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+    database: 0
+    timeout: 5000
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.memento.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+# AI Configuration
+ai:
+  provider: deepseek
+  deepseek:
+    api-key: ${DEEPSEEK_API_KEY:sk-95211139baf243869260c72125e7c746}
+    model: deepseek-chat
+    api-url: https://api.deepseek.com/v1/chat/completions
+  embedding:
+    model: text-embedding-3-small
+    dimension: 1536
+
+# File Storage
+file:
+  upload-path: ${UPLOAD_PATH:./uploads/}
+  export-path: ${EXPORT_PATH:./exports/}
+
+# CORS Configuration
+cors:
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173}
+
+# ─────────────────────────────────────────────────────────────
+# 心灵回声子系统专属 AI 配置（与上方 ai.deepseek 完全独立）
+# 使用我自己的 DeepSeek API Key，请通过环境变量 MY_DEEPSEEK_API_KEY 提供
+# ─────────────────────────────────────────────────────────────
+my-ai:
+  api-key: ${MY_DEEPSEEK_API_KEY:sk-22878d80d4f24b819730d5ff9d708362}
+  model: ${MY_DEEPSEEK_MODEL:deepseek-chat}
+  api-url: ${MY_DEEPSEEK_API_URL:https://api.deepseek.com/v1/chat/completions}
