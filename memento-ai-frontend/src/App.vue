@@ -54,6 +54,11 @@
               <el-icon :size="20"><Download /></el-icon>
               <template #title><span class="menu-text">永恒归档</span></template>
             </el-menu-item>
+            <el-divider style="margin: 12px 0; border-color: rgba(255,255,255,0.1);" />
+            <el-menu-item index="/ai/index">
+              <el-icon :size="20"><MagicStick /></el-icon>
+              <template #title><span class="menu-text">心灵回声系统</span></template>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-container class="main-container">
@@ -107,7 +112,14 @@ const currentPageTitle = computed(() => {
     '/clusters': '记忆星团',
     '/narrative': '叙事编织',
     '/sentiment': '情感光谱',
-    '/export': '永恒归档'
+    '/export': '永恒归档',
+    '/ai/index': '心灵回声系统',
+    '/ai/badges': '时光勋章',
+    '/ai/keywords': '灵魂关键词',
+    '/ai/palette': '情绪调色板',
+    '/ai/echo': '时光回声',
+    '/ai/dialogue': '心灵对话亭',
+    '/ai/future-mail': '未来邮局'
   }
   return menuMap[route.path] || ''
 })

@@ -106,3 +106,20 @@ CREATE TABLE IF NOT EXISTS app_config (
 MERGE INTO app_config (config_key, config_value) KEY(config_key) VALUES ('is_initialized', 'false');
 MERGE INTO app_config (config_key, config_value) KEY(config_key) VALUES ('ai_model', 'deepseek');
 MERGE INTO app_config (config_key, config_value) KEY(config_key) VALUES ('api_key', '');
+
+-- ─────────────────────────────────────────────────────────────
+-- 心灵回声子系统：未来邮局（future_letters）
+-- 独立于现有表结构，不影响任何已有功能
+-- ─────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS future_letters (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id     BIGINT NOT NULL DEFAULT 1,
+    title       VARCHAR(100) NOT NULL,
+    content     TEXT NOT NULL,
+    echo        VARCHAR(500),
+    target_date TIMESTAMP NOT NULL,
+    status      VARCHAR(20) NOT NULL DEFAULT 'locked',
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_fl_user ON future_letters(user_id);
+CREATE INDEX IF NOT EXISTS idx_fl_target ON future_letters(target_date);
