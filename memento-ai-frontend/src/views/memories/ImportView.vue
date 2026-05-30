@@ -1,8 +1,12 @@
 <template>
-  <div class="import-container museum-fade-in">
+  <div class="memory-import-view museum-fade-in">
+    <!-- 展厅头部：艺术化标题 -->
     <div class="museum-header">
-      <h1 class="museum-title">记忆实验室</h1>
-      <p class="museum-subtitle">萃取时间残片，凝练永恒记忆</p>
+      <div class="header-inner">
+        <h1 class="museum-title">记忆实验室</h1>
+        <div class="header-divider"></div>
+        <p class="museum-subtitle">从尘封的文档中，提炼出那些被遗忘的光影</p>
+      </div>
     </div>
 
     <div class="laboratory-core">
@@ -223,13 +227,31 @@ const getSentimentLabel = (score) => {
 .museum-header {
   text-align: center;
   margin-bottom: 60px;
+  
+  .museum-title {
+    font-family: var(--font-title);
+    font-size: 38px;
+    letter-spacing: 12px;
+    margin: 0 0 15px 0;
+    background: var(--grad-mystic);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(127, 90, 240, 0.4));
+  }
+
+  .header-divider {
+    width: 220px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent-mystic), transparent);
+    margin: 0 auto 12px;
+  }
+
   .museum-subtitle {
-    color: var(--accent-quaternary);
-    font-size: 16px;
-    letter-spacing: 4px;
-    margin-top: 15px;
-    opacity: 0.8;
-    text-transform: uppercase;
+    color: #94a1b2;
+    font-size: 15px;
+    letter-spacing: 3px;
+    font-weight: 300;
   }
 }
 

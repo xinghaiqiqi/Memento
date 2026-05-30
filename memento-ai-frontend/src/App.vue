@@ -50,14 +50,17 @@
               <el-icon :size="20"><Histogram /></el-icon>
               <template #title><span class="menu-text">情感光谱</span></template>
             </el-menu-item>
+            <el-menu-item index="/ai/echo">
+              <el-icon :size="20"><MagicStick /></el-icon>
+              <template #title><span class="menu-text">心灵回声</span></template>
+            </el-menu-item>
+            <el-menu-item index="/ai/future-mail">
+              <el-icon :size="20"><Promotion /></el-icon>
+              <template #title><span class="menu-text">未来邮局</span></template>
+            </el-menu-item>
             <el-menu-item index="/export">
               <el-icon :size="20"><Download /></el-icon>
               <template #title><span class="menu-text">永恒归档</span></template>
-            </el-menu-item>
-            <el-divider style="margin: 12px 0; border-color: rgba(255,255,255,0.1);" />
-            <el-menu-item index="/ai/index">
-              <el-icon :size="20"><MagicStick /></el-icon>
-              <template #title><span class="menu-text">心灵回声系统</span></template>
             </el-menu-item>
           </el-menu>
         </el-aside>
@@ -71,8 +74,10 @@
               <h2 class="current-page-title">{{ currentPageTitle }}</h2>
             </div>
             <div class="header-right">
-              <el-avatar size="small" :src="userStore.userInfo.avatar" />
-              <span class="nickname">{{ userStore.userInfo.nickname }}</span>
+              <router-link to="/profile" class="profile-entry">
+                <el-avatar size="small" :src="userStore.userInfo.avatar" />
+                <span class="nickname">{{ userStore.userInfo.nickname }}</span>
+              </router-link>
             </div>
           </el-header>
           <el-main>
@@ -113,12 +118,8 @@ const currentPageTitle = computed(() => {
     '/narrative': '叙事编织',
     '/sentiment': '情感光谱',
     '/export': '永恒归档',
-    '/ai/index': '心灵回声系统',
-    '/ai/badges': '时光勋章',
-    '/ai/keywords': '灵魂关键词',
-    '/ai/palette': '情绪调色板',
-    '/ai/echo': '时光回声',
-    '/ai/dialogue': '心灵对话亭',
+    '/profile': '个人主页',
+    '/ai/echo': '心灵回声',
     '/ai/future-mail': '未来邮局'
   }
   return menuMap[route.path] || ''
@@ -356,12 +357,39 @@ $shadows-big:    multiple-box-shadow(100);
     display: flex;
     align-items: center;
     gap: 15px;
+
+    .profile-entry {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 15px rgba(127, 90, 240, 0.2);
+        transform: translateY(-1px);
+
+        .nickname {
+          color: #fff;
+          text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+
     .nickname {
       font-size: 14px;
-      color: #fff;
+      color: #e2e8f0;
       font-family: var(--font-title);
       letter-spacing: 1px;
+      transition: all 0.3s;
     }
+
     :deep(.el-avatar) {
       border: 1px solid var(--accent-primary);
       box-shadow: 0 0 10px rgba(127, 90, 240, 0.3);

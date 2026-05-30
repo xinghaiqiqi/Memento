@@ -1,8 +1,11 @@
 <template>
   <div class="sentiment-container museum-fade-in">
     <div class="museum-header">
-      <h1 class="museum-title">情感光谱</h1>
-      <p class="museum-subtitle">捕捉情感的波长，洞察灵魂的起伏</p>
+      <div class="header-inner">
+        <h1 class="museum-title">情感光谱</h1>
+        <div class="header-divider"></div>
+        <p class="museum-subtitle">捕捉情感的波长，洞察灵魂的起伏</p>
+      </div>
     </div>
 
     <el-row :gutter="30">
@@ -184,19 +187,31 @@ const updatePieChart = (stats) => {
 .museum-header {
   text-align: center;
   margin-bottom: 60px;
+  
   .museum-title {
-    font-size: 42px;
-    background: linear-gradient(to bottom, #fff, #94a1b2);
+    font-family: var(--font-title);
+    font-size: 38px;
+    letter-spacing: 12px;
+    margin: 0 0 15px 0;
+    background: var(--grad-mystic);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin: 0;
+    filter: drop-shadow(0 0 15px rgba(127, 90, 240, 0.4));
   }
+
+  .header-divider {
+    width: 220px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent-mystic), transparent);
+    margin: 0 auto 12px;
+  }
+
   .museum-subtitle {
-    color: var(--accent-primary);
-    letter-spacing: 4px;
-    font-size: 14px;
-    margin-top: 15px;
+    color: #94a1b2;
+    font-size: 15px;
+    letter-spacing: 3px;
+    font-weight: 300;
   }
 }
 

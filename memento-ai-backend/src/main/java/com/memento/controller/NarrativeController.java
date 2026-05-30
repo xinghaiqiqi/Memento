@@ -52,7 +52,14 @@ public class NarrativeController {
     public Result<GeneratedNarrative> generate(@RequestBody Map<String, Object> params) {
         Long userId = SecurityUtils.getCurrentUserId();
         String style = (String) params.getOrDefault("style", "prose");
-        List<String> dateRange = (List<String>) params.get("dateRange");
+        List<String> dateRange = null;
+        Object dateRangeObj = params.get("dateRange");
+        if (dateRangeObj instanceof List<?>) {
+            dateRange = ((List<?>) dateRangeObj).stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .collect(Collectors.toList());
+        }
         
         LambdaQueryWrapper<Memory> query = new LambdaQueryWrapper<Memory>()
                 .eq(Memory::getUserId, userId)
