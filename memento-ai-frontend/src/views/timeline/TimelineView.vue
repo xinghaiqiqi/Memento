@@ -241,21 +241,29 @@ onMounted(() => {
   margin-bottom: 60px;
 
   .museum-title {
-    font-size: 42px;
-    background: linear-gradient(to bottom, #fff, #94a1b2);
+    font-family: var(--font-title);
+    font-size: 38px;
+    letter-spacing: 12px;
+    margin: 0 0 15px 0;
+    background: var(--grad-mystic);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin: 0;
+    filter: drop-shadow(0 0 15px rgba(127, 90, 240, 0.4));
+  }
+
+  .header-divider {
+    width: 220px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent-mystic), transparent);
+    margin: 0 auto 12px;
   }
 
   .museum-subtitle {
-    color: var(--accent-mystic);
-    font-size: 14px;
-    letter-spacing: 2px;
-    margin-top: 15px;
-    opacity: 0.8;
-    text-transform: uppercase;
+    color: #94a1b2;
+    font-size: 15px;
+    letter-spacing: 3px;
+    font-weight: 300;
   }
 
   .header-actions {

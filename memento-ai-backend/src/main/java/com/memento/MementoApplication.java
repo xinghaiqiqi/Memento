@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
-@MapperScan("com.memento.mapper")
+@MapperScan({"com.memento.mapper", "com.memento.aisubsystem.mapper"})
 @EnableAsync
 public class MementoApplication {
 

@@ -56,6 +56,24 @@ const router = createRouter({
       name: 'export',
       component: () => import('@/views/export/ExportView.vue'),
       meta: { title: '导出报告' }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/views/ProfileView.vue'),
+      meta: { title: '个人主页' }
+    },
+    {
+      path: '/ai/echo',
+      name: 'ai-echo',
+      component: () => import('@/views/ai-subsystem/EchoSystemView.vue'),
+      meta: { title: '心灵回声' }
+    },
+    {
+      path: '/ai/future-mail',
+      name: 'future-mail',
+      component: () => import('@/views/ai-subsystem/FutureMailView.vue'),
+      meta: { title: '未来邮局' }
     }
   ]
 })

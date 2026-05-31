@@ -6,7 +6,7 @@
         <h1 class="museum-name">The Memento Archive</h1>
         <div class="plaque-divider"></div>
         <p class="curator-info">馆长: {{ userStore.userInfo.nickname }}</p>
-        <p class="curator-date">记录始于 {{ today }}</p>
+        <p class="curator-date">记录始于 {{ startDate }}</p>
       </div>
     </div>
 
@@ -108,7 +108,7 @@ import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const userStore = useUserStore()
-const today = dayjs().format('YYYY / MM / DD')
+const startDate = ref('...')
 
 const stats = ref([
   { label: '记忆结晶', value: '0', icon: 'Collection', trend: 0 },
@@ -134,6 +134,13 @@ const fetchDashboardData = async () => {
     stats.value[1].value = statsData.totalMilestones
     stats.value[2].value = statsData.totalNarratives
     stats.value[3].value = statsData.resonance
+    
+    // 更新起始日期
+    if (statsData.earliestDate) {
+      startDate.value = dayjs(statsData.earliestDate).format('YYYY / MM / DD')
+    } else {
+      startDate.value = dayjs().format('YYYY / MM / DD')
+    }
     
     // 更新最近记忆
     recentMemories.value = recentRes.data.data

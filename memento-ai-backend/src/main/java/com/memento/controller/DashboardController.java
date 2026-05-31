@@ -61,6 +61,13 @@ public class DashboardController {
             stats.put("totalNarratives", totalNarratives);
             stats.put("resonance", resonance);
             
+            // 获取最早的记忆时间
+            Memory earliestMemory = memoryService.getOne(new LambdaQueryWrapper<Memory>()
+                    .eq(Memory::getUserId, userId)
+                    .orderByAsc(Memory::getEventDate)
+                    .last("limit 1"));
+            stats.put("earliestDate", earliestMemory != null ? earliestMemory.getEventDate() : null);
+            
             return Result.success(stats);
         } catch (Exception e) {
             System.err.println(">>> [Dashboard] Failed to get stats: " + e.getMessage());

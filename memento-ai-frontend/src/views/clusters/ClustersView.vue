@@ -1,8 +1,11 @@
 <template>
   <div class="clusters-container museum-fade-in">
     <div class="museum-header">
-      <h1 class="museum-title">记忆影像墙</h1>
-      <p class="museum-subtitle">漫步在时光长廊，重温那些被定格的瞬间</p>
+      <div class="header-inner">
+        <h1 class="museum-title">记忆影像墙</h1>
+        <div class="header-divider"></div>
+        <p class="museum-subtitle">漫步在时光长廊，重温那些被定格的瞬间</p>
+      </div>
       
       <div class="header-actions">
         <button class="ritual-button small sensor-toggle" :class="{ active: sensorEnabled }" @click="toggleSensor">
@@ -77,7 +80,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Pointer } from '@element-plus/icons-vue'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import axios from 'axios'
 import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands'
 import { Camera } from '@mediapipe/camera_utils'
