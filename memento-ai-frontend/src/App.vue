@@ -48,7 +48,7 @@
             </el-menu-item>
             <el-menu-item index="/sentiment">
               <el-icon :size="20"><Histogram /></el-icon>
-              <template #title><span class="menu-text">情感光谱</span></template>
+              <template #title><span class="menu-text">记忆顾问</span></template>
             </el-menu-item>
             <el-menu-item index="/export">
               <el-icon :size="20"><Download /></el-icon>
@@ -106,7 +106,7 @@ const currentPageTitle = computed(() => {
     '/timeline': '时间长廊',
     '/clusters': '记忆星团',
     '/narrative': '叙事编织',
-    '/sentiment': '情感光谱',
+    '/sentiment': '记忆顾问',
     '/export': '永恒归档'
   }
   return menuMap[route.path] || ''

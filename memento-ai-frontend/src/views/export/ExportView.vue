@@ -83,7 +83,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 import axios from 'axios'
 
@@ -98,21 +98,65 @@ const exportConfig = reactive({
   layout: 'classic'
 })
 
+const readBlobErrorMessage = async (error) => {
+  const data = error.response?.data
+  if (!data) return error.message || '导出失败'
+
+  try {
+    const text = data instanceof Blob ? await data.text() : String(data)
+    const parsed = JSON.parse(text)
+    return parsed.message || text || '导出失败'
+  } catch {
+    return error.message || '导出失败'
+  }
+}
+
+const showExportError = (message) => {
+  ElMessageBox.alert(message, '无法导出', {
+    confirmButtonText: '知道了',
+    type: 'error'
+  })
+}
+
 const handleExport = async () => {
   exporting.value = true
   try {
-    const res = await axios.post('/api/export/create', exportConfig)
-    if (res.data.code === 200) {
-      ElMessage.success('导出任务已提交，完成后将自动下载')
-      // 模拟下载过程
-      setTimeout(() => {
-        window.open(res.data.data.filePath, '_blank')
-      }, 2000)
-    } else {
-      throw new Error(res.data.message)
+    const res = await axios.post('/api/export/create', exportConfig, {
+      responseType: 'blob'
+    })
+    
+    const contentType = res.headers?.['content-type'] || ''
+    if (!contentType.includes('application/pdf')) {
+      const text = res.data instanceof Blob ? await res.data.text() : String(res.data)
+      let message = '导出失败'
+      try {
+        message = JSON.parse(text).message || message
+      } catch {
+        message = text || message
+      }
+      showExportError(message)
+      return
     }
+
+    // 创建下载链接
+    const blob = new Blob([res.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    
+    // 生成文件名
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')
+    link.download = `memento_${timestamp}.pdf`
+    
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    
+    ElMessage.success('PDF导出成功！')
   } catch (error) {
-    ElMessage.error(error.message || '导出失败')
+    const message = await readBlobErrorMessage(error)
+    showExportError(message)
   } finally {
     exporting.value = false
   }
