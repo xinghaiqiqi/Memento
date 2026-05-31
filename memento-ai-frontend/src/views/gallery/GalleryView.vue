@@ -14,6 +14,37 @@
       </div>
     </div>
 
+    <div class="statistics-container">
+      <div class="stat-item total">
+        <div class="stat-icon">📚</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ statistics.total }}</div>
+          <div class="stat-label">总记忆数</div>
+        </div>
+      </div>
+      <div class="stat-item positive">
+        <div class="stat-icon">😊</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ statistics.positive }}</div>
+          <div class="stat-label">积极</div>
+        </div>
+      </div>
+      <div class="stat-item neutral">
+        <div class="stat-icon">😐</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ statistics.neutral }}</div>
+          <div class="stat-label">中性</div>
+        </div>
+      </div>
+      <div class="stat-item negative">
+        <div class="stat-icon">😔</div>
+        <div class="stat-content">
+          <div class="stat-number">{{ statistics.negative }}</div>
+          <div class="stat-label">消极</div>
+        </div>
+      </div>
+    </div>
+
     <div class="waterfall-layout" v-loading="loading">
       <div v-if="filteredMemories.length === 0" class="empty-state">
         <el-empty description="暂无相关记忆" />
@@ -22,7 +53,6 @@
         v-for="memory in filteredMemories" 
         :key="memory.id" 
         class="memory-card-wrapper"
-        @click="handleView(memory)"
       >
         <div 
           class="memory-card"
@@ -39,7 +69,6 @@
               <div class="sentiment-indicator" :style="{ backgroundColor: memory.sentimentColor }"></div>
             </div>
             <h3 class="title">{{ memory.title }}</h3>
-            <p class="summary">{{ memory.summary }}</p>
             <div class="card-footer">
               <div v-if="memory.topicName" class="topic-badge">{{ memory.topicName }}</div>
               <div class="tags">
@@ -49,28 +78,15 @@
               </div>
             </div>
           </div>
+          <div class="card-hover-content">
+            <h3 class="hover-title">{{ memory.title }}</h3>
+            <div class="hover-detail">
+              {{ memory.content }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    <el-drawer
-      v-model="drawerVisible"
-      :title="selectedMemory?.title"
-      size="45%"
-      class="memory-drawer"
-    >
-      <div v-if="selectedMemory" class="memory-detail">
-        <div class="detail-meta">
-          <el-tag type="info">{{ selectedMemory.eventDate }}</el-tag>
-          <el-tag :style="{ backgroundColor: selectedMemory.sentimentColor }">
-            {{ getSentimentLabel(selectedMemory.sentimentScore) }}
-          </el-tag>
-        </div>
-        <div class="detail-content">
-          {{ selectedMemory.content }}
-        </div>
-      </div>
-    </el-drawer>
   </div>
 </template>
 
@@ -80,8 +96,6 @@ import axios from 'axios'
 
 const loading = ref(false)
 const sentimentFilter = ref('all')
-const drawerVisible = ref(false)
-const selectedMemory = ref(null)
 const memories = ref([
   { id: 1, title: '西湖边的落日', summary: '今天和朋友一起去了西湖，落日真的很美。那一抹橘红染红了整个湖面，微风拂过...', content: '今天和朋友一起去了西湖，落日真的很美。那一抹橘红染红了整个湖面，微风拂过，泛起阵阵涟漪。远处的雷峰塔在夕阳的映照下显得格外壮丽，湖边的柳树轻轻摇曳，仿佛在诉说着古老的故事。', eventDate: '2024-05-12', tags: '旅行,落日', sentimentScore: 0.8, sentimentColor: '#ef4444', topicName: '旅行足迹' },
   { id: 2, title: '完成项目', summary: '终于把这个艰巨的任务完成了。这个过程虽然辛苦，但看到成果的那一刻...', content: '终于把这个艰巨的任务完成了。这个过程虽然辛苦，但看到成果的那一刻，所有的付出都值得了。团队协作非常顺利，每个人都发挥了自己的专长，最终交付了一个让客户满意的产品。', eventDate: '2024-05-10', tags: '工作,成就感', sentimentScore: 0.5, sentimentColor: '#f97316', topicName: '职场成长' },
@@ -95,8 +109,10 @@ const fetchMemories = async () => {
   loading.value = true
   try {
     const res = await axios.get('/api/gallery?size=50')
+    console.log('Gallery API response:', res.data)
     if (res.data && res.data.code === 200 && res.data.data) {
       const newData = res.data.data.records || res.data.data || []
+      console.log('Fetched memories:', newData)
       if (newData.length > 0) {
         memories.value = newData
       }
@@ -108,8 +124,18 @@ const fetchMemories = async () => {
   }
 }
 
+const statistics = computed(() => {
+  const list = memories.value
+  return {
+    total: list.length,
+    positive: list.filter(item => item.sentimentScore > 0.3).length,
+    neutral: list.filter(item => item.sentimentScore >= -0.3 && item.sentimentScore <= 0.3).length,
+    negative: list.filter(item => item.sentimentScore < -0.3).length
+  }
+})
+
 const filteredMemories = computed(() => {
-  let list = memories.value.filter(m => !!m.photoUrl) // 强制只显示有照片的记忆
+  let list = memories.value
   
   if (sentimentFilter.value === 'all') return list
   return list.filter(item => {
@@ -136,11 +162,6 @@ const handleFilterChange = () => {
   }, 300)
 }
 
-const handleView = (memory) => {
-  selectedMemory.value = memory
-  drawerVisible.value = true
-}
-
 onMounted(() => {
   fetchMemories()
 })
@@ -150,12 +171,11 @@ onMounted(() => {
 .gallery-container {
   padding: 40px;
   min-height: calc(100vh - 60px);
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
 }
 
 .museum-header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
   
   .museum-title {
     font-size: 42px;
@@ -183,6 +203,76 @@ onMounted(() => {
   }
 }
 
+.statistics-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 12px 24px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    min-width: 130px;
+    justify-content: center;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(127, 90, 240, 0.2);
+    }
+
+    &.total {
+      border-color: rgba(127, 90, 240, 0.3);
+      background: linear-gradient(135deg, rgba(127, 90, 240, 0.1), rgba(157, 78, 221, 0.05));
+    }
+
+    &.positive {
+      border-color: rgba(239, 68, 68, 0.3);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(249, 115, 22, 0.05));
+    }
+
+    &.neutral {
+      border-color: rgba(234, 179, 8, 0.3);
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(132, 204, 22, 0.05));
+    }
+
+    &.negative {
+      border-color: rgba(59, 130, 246, 0.3);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.05));
+    }
+
+    .stat-icon {
+      font-size: 24px;
+    }
+
+    .stat-content {
+      text-align: left;
+
+      .stat-number {
+        font-size: 22px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.1;
+      }
+
+      .stat-label {
+        font-size: 12px;
+        color: #94a1b2;
+        margin-top: 2px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+}
+
 .waterfall-layout {
   column-count: 3;
   column-gap: 28px;
@@ -192,8 +282,8 @@ onMounted(() => {
 
   .memory-card-wrapper {
     break-inside: avoid;
-    margin-bottom: 28px;
-    cursor: pointer;
+    margin-bottom: 40px;
+    padding-top: 18px;
   }
 
   .memory-card {
@@ -226,36 +316,101 @@ onMounted(() => {
     &:hover {
       transform: translateY(-10px) scale(1.02);
       box-shadow: 0 15px 40px rgba(127, 90, 240, 0.2);
+      background-image: none !important;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      
+      .card-overlay {
+        display: none;
+      }
+      
+      .card-content {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+      }
+      
+      .card-hover-content {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      
+      .sentiment-indicator {
+        display: none;
+      }
     }
 
     .card-content {
-      padding: 28px;
+      padding: 40px;
+      transition: all 0.3s ease;
+    }
+    
+    .card-hover-content {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      padding: 28px 26px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      //overflow-y: auto;
+      box-sizing: border-box;
+      
+      .hover-title {
+        margin: 0 0 24px 0;
+        font-size: 22px;
+        color: #fff;
+        font-weight: 600;
+        line-height: 1.4;
+        word-wrap: break-word;
+        word-break: break-word;
+      }
+      
+      .hover-detail {
+        flex: 1;
+        font-size: 16px;
+        line-height: 1.8;
+        color: #94a1b2;
+        white-space: normal;
+        word-wrap: break-word;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        //overflow-y: auto;
+        width: 100%;
+        max-width: 100%;
+      }
     }
 
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 24px;
       
       .date { 
-        font-size: 13px; 
+        font-size: 14px; 
         color: #7f5af0; 
         font-weight: 600;
         letter-spacing: 1px;
       }
       
       .sentiment-indicator {
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
         box-shadow: 0 0 10px currentColor;
       }
     }
 
     .title {
-      margin: 0 0 14px 0;
-      font-size: 20px;
+      margin: 0 0 24px 0;
+      font-size: 22px;
       color: #fff;
       font-weight: 600;
       line-height: 1.4;
@@ -277,25 +432,25 @@ onMounted(() => {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-top: 16px;
+      padding-top: 24px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
       
       .topic-badge {
         background: linear-gradient(135deg, #7f5af0, #9d4edd);
         color: #fff;
-        padding: 4px 12px;
+        padding: 6px 16px;
         border-radius: 20px;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 500;
       }
       
       .tags {
         display: flex;
-        gap: 8px;
+        gap: 10px;
         
         .tag {
           color: #94a1b2;
-          font-size: 12px;
+          font-size: 13px;
           opacity: 0.7;
         }
       }
@@ -303,25 +458,8 @@ onMounted(() => {
   }
 }
 
-.memory-detail {
-  padding: 0 20px;
-  color: #fff;
-  
-  .detail-meta {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-  
-  .detail-content {
-    font-size: 17px;
-    line-height: 1.8;
-    color: #fffffe;
-    white-space: pre-wrap;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 20px;
-    border-radius: 12px;
-  }
+:deep(.el-radio-button) {
+  margin: 0 8px;
 }
 
 :deep(.el-radio-button__inner) {
@@ -336,14 +474,5 @@ onMounted(() => {
   background: linear-gradient(135deg, #7f5af0, #9d4edd);
   border-color: #7f5af0;
   color: #fff;
-}
-
-:deep(.memory-drawer .el-drawer__header) {
-  background: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-:deep(.memory-drawer .el-drawer__body) {
-  background: #0f0f23;
 }
 </style>
